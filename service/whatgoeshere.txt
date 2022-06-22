@@ -1,0 +1,6 @@
+Business Logic:
+----------------------------------------------------------------
+Insert domain objects here, domain object 
+files also contain the functions 
+associated to that struct and the interface
+----------------------------------------------------------------

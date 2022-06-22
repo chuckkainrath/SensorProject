@@ -1,0 +1,5 @@
+Database Information:
+----------------------------------------------------------------
+Connection string
+links between our service and DB when forming queries
+EX: for account.go you have accountRepositoryDB.go

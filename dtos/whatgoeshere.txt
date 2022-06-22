@@ -1,0 +1,3 @@
+Simple Data Transfer Object:
+
+Includes responses and Requests for the DB
