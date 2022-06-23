@@ -6,11 +6,13 @@ type ITemperatureRepo interface {
 	AddTemperatureToDb(temp *models.Temperature) error
 }
 
+type temperatureRepo struct{}
 
-type TemperatureRepo struct{}
+func NewTemperatureRepo() ITemperatureRepo {
+	return temperatureRepo{}
+}
 
-func(t TemperatureRepo)AddTemperatureToDb(temp *models.Temperature) error{
-
-	result:=DB().Create(temp)
+func (t temperatureRepo) AddTemperatureToDb(temp *models.Temperature) error {
+	result := DB().Create(temp)
 	return result.Error
 }

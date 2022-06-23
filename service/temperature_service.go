@@ -10,11 +10,17 @@ type ITemperatureService interface {
 	AddTemperature(tempDto dtos.AddTemperatureDto) error
 }
 
-type TemperatureService struct {
+type temperatureService struct {
 	TemperatureRepo repository.ITemperatureRepo
 }
 
-func (t TemperatureService) AddTemperature(tempDto dtos.AddTemperatureDto) error {
+func NewTemperatureService() ITemperatureService {
+	return temperatureService{
+		TemperatureRepo: repository.NewTemperatureRepo(),
+	}
+}
+
+func (t temperatureService) AddTemperature(tempDto dtos.AddTemperatureDto) error {
 
 	temp := models.Temperature{
 		Temperature: float64(tempDto.Temperature),
