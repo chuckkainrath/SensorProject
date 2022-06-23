@@ -21,7 +21,7 @@ type Sensor struct {
 	UserId uint
 }
 
-type Treshold struct {
+type Threshold struct {
 	ID          uint
 	SensorID    uint
 	Temperature float64
