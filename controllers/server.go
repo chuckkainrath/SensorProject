@@ -11,7 +11,7 @@ import (
 func StartServer() {
 	router := mux.NewRouter()
 	router.HandleFunc("/test", test)
-	router.HandleFunc("/login", Login).Methods("POST")
+	router.HandleFunc("/login", NewUserController().Login).Methods("POST")
 
 	// auth routes
 	s := router.PathPrefix("/auth").Subrouter()
