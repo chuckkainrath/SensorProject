@@ -1,21 +1,28 @@
 package auth
 
 import (
+	"SensorProject/models"
+	"context"
 	"encoding/json"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"strings"
 )
 
+// Exception struct declaration
+type Exception struct {
+	Message string `json:"message"`
+}
+
 func JwtVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		var header = r.Header.Get("x-access-token") //Grab the token from the header
+		var header = r.Header.Get("x-access-token") // Grab the token from the header
 
 		header = strings.TrimSpace(header)
 
 		if header == "" {
-			//Token is missing, returns with error code 403 Unauthorized
+			// Token is missing, returns with error code 403 Unauthorized
 			w.WriteHeader(http.StatusForbidden)
 			json.NewEncoder(w).Encode(Exception{Message: "Missing auth token"})
 			return
