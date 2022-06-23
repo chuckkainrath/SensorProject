@@ -23,7 +23,7 @@ func NewTemperatureService() ITemperatureService {
 func (t temperatureService) AddTemperature(tempDto dtos.AddTemperatureDto) error {
 
 	temp := models.Temperature{
-		Temperature: float64(tempDto.Temperature),
+		Temperature: tempDto.Temperature,
 		SensorID:    tempDto.SensorID,
 	}
 	return t.TemperatureRepo.AddTemperatureToDb(&temp)

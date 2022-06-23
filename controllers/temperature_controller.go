@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"SensorProject/dtos"
+	"SensorProject/events"
 	"SensorProject/service"
 	"encoding/json"
 	"io/ioutil"
@@ -14,11 +15,13 @@ type ITemperatureContoller interface {
 
 type temperatureController struct {
 	TemperatureService service.ITemperatureService
+	tempAddChan        chan<- uint
 }
 
 func NewTemperatureController() ITemperatureContoller {
 	return temperatureController{
 		TemperatureService: service.NewTemperatureService(),
+		tempAddChan:        events.GetAddTemperatureChannel(),
 	}
 }
 
@@ -43,5 +46,7 @@ func (t temperatureController) addTemperature(w http.ResponseWriter, r *http.Req
 		//TODO: error handling
 		return
 	}
+	t.tempAddChan <- temp.SensorID
+
 	// TODO: proper response
 }
