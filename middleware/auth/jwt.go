@@ -14,6 +14,9 @@ type Exception struct {
 	Message string `json:"message"`
 }
 
+// Checks if token is passed in the request headers
+// Validates and decodes the token
+
 func JwtVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 

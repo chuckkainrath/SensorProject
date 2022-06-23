@@ -17,6 +17,10 @@ type ErrorResponse struct {
 
 var db = repository.DB()
 
+// Login:
+// Reads the content of the request body
+// Casts the request body content into user struct
+
 func Login(w http.ResponseWriter, r *http.Request) {
 	user := models.User{}
 	err := json.NewDecoder(r.Body).Decode(user)
@@ -28,6 +32,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	resp := FindUser(user.Username, user.HashedPassword)
 	json.NewEncoder(w).Encode(resp)
 }
+
+// FindUser:
+// Pass in username and password
+// Check if username provided is in database
+// Check if the password is the same as the one provided
+// Create a token for the user
+// Attach the token to the user object and send the response
 
 func FindUser(username, password string) map[string]interface{} {
 	user := &models.User{}
