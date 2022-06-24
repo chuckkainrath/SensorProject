@@ -1,7 +1,6 @@
 package dto
 
 type Threshold struct {
-	ID          uint
-	SensorID    uint
-	Temperature float64
+	SensorID    uint    `json:"sensor_id"`
+	Temperature float64 `json:"temperature"`
 }

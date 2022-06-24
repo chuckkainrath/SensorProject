@@ -8,8 +8,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type ThresholdHandler struct {
-	service service.ThresholdService
+type IThresholdController interface {
+	GetSensorThreshold(w http.ResponseWriter, r *http.Request)
+}
+
+type thresholdController struct {
+	thresholdService service.IThresholdService
+}
+
+func NewThresholdController(thresholdService service.IThresholdService) IThresholdController {
+	return thresholdController{
+		thresholdService: thresholdService,
+	}
 }
 
 func writeResponse(w http.ResponseWriter, code int, data interface{}) {
@@ -22,12 +32,12 @@ func writeResponse(w http.ResponseWriter, code int, data interface{}) {
 }
 
 //GET /sensors/:sensorId/thresholds/:thresholdId
-func (th *ThresholdHandler) getSensorThreshold(w http.ResponseWriter, r *http.Request) {
+func (th thresholdController) GetSensorThreshold(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	sensorId := vars["sensor_id"]
 	thresholdId := vars["threshold_id"]
 	//status := r.URL.Query().Get("status")
-	customers, err := th.service.GetSensorThreshold(sensorId, thresholdId)
+	customers, err := th.thresholdService.GetSensorThreshold(sensorId, thresholdId)
 	if err != nil {
 		writeResponse(w, err.Code, err.AsMessage())
 	}

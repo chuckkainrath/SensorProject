@@ -27,10 +27,10 @@ type Threshold struct {
 	Temperature float64
 }
 
-type TresholdAlert struct {
+type ThresholdAlert struct {
 	ID          uint
 	SensorID    string
 	Temperature float64
-	Treshold    float64
+	Threshold    float64
 	CreatedAt   time.Time
 }

@@ -10,12 +10,16 @@ type IThresholdService interface {
 	GetSensorThreshold(sensorId string, thresholdId string) (*models.Threshold, *errors.AppError)
 }
 
-type ThresholdService struct {
-	repo repository.ThresholdRepository
+type thresholdService struct {
+	thresholdRepo repository.IThresholdRepo
 }
 
-func (t ThresholdService) GetSensorThreshold(sensorId string, thresholdId string) (*models.Threshold, *errors.AppError) {
-	c, err := t.repo.GetSensorThreshold(sensorId, thresholdId)
+func NewThresholdService(thresholdRepo repository.IThresholdRepo) IThresholdService {
+	return thresholdService{thresholdRepo: thresholdRepo}
+}
+
+func (t thresholdService) GetSensorThreshold(sensorId string, thresholdId string) (*models.Threshold, *errors.AppError) {
+	c, err := t.thresholdRepo.GetSensorThreshold(sensorId, thresholdId)
 	if err != nil {
 		return nil, err
 	}
@@ -23,8 +27,4 @@ func (t ThresholdService) GetSensorThreshold(sensorId string, thresholdId string
 	//map the domain object to our dto and return it -- responsilibity of making a dto is now on the domain)
 
 	return c, nil
-}
-
-func NewThresholdService(repo repository.ThresholdRepository) ThresholdService {
-	return ThresholdService{repo}
 }
