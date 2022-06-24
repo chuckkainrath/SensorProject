@@ -38,3 +38,4 @@ type ThresholdAlert struct {
 	Threshold   decimal.Decimal `gorm:"type:numeric(8,4)"`
 	CreatedAt   time.Time
 }
+
