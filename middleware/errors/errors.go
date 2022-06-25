@@ -13,6 +13,10 @@ func (e AppError) AsMessage() *AppError {
 	}
 }
 
+func (e AppError) Error() string {
+	return e.Message
+}
+
 func NewNotFoundError(message string) *AppError {
 	return &AppError{
 		Code:    http.StatusNotFound,
@@ -30,6 +34,20 @@ func NewUnexpectedError(message string) *AppError {
 func NewValidationError(message string) *AppError {
 	return &AppError{
 		Code:    http.StatusUnprocessableEntity,
+		Message: message,
+	}
+}
+
+func NewBadRequestError(message string) *AppError {
+	return &AppError{
+		Code:    http.StatusBadRequest,
+		Message: message,
+	}
+}
+
+func NewUnauthorizedError(message string) *AppError {
+	return &AppError{
+		Code:    http.StatusUnauthorized,
 		Message: message,
 	}
 }

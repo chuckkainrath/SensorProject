@@ -24,6 +24,5 @@ func (r repositoryPostgreSQL) GetSensorThreshold(sensorId string, thresholdId st
 }
 
 func NewThresholdRepositoryDB(dbClient *gorm.DB) IThresholdRepo {
-
 	return repositoryPostgreSQL{dbClient}
 }

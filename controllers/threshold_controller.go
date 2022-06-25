@@ -38,6 +38,7 @@ func (th thresholdController) GetSensorThreshold(w http.ResponseWriter, r *http.
 	thresholdId := vars["threshold_id"]
 	//status := r.URL.Query().Get("status")
 	customers, err := th.thresholdService.GetSensorThreshold(sensorId, thresholdId)
+	
 	if err != nil {
 		writeResponse(w, err.Code, err.AsMessage())
 	}

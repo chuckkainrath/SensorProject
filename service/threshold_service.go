@@ -14,8 +14,8 @@ type thresholdService struct {
 	thresholdRepo repository.IThresholdRepo
 }
 
-func NewThresholdService(thresholdRepo repository.IThresholdRepo) IThresholdService {
-	return thresholdService{thresholdRepo: thresholdRepo}
+func NewThresholdService(repo repository.IThresholdRepo) IThresholdService {
+	return thresholdService{thresholdRepo:repo}
 }
 
 func (t thresholdService) GetSensorThreshold(sensorId string, thresholdId string) (*models.Threshold, *errors.AppError) {
@@ -28,3 +28,5 @@ func (t thresholdService) GetSensorThreshold(sensorId string, thresholdId string
 
 	return c, nil
 }
+
+
