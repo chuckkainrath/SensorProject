@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/gorilla/mux v1.8.0
+	github.com/shopspring/decimal v1.2.0
 	gorm.io/driver/postgres v1.3.7
 	gorm.io/gorm v1.23.6
 )
