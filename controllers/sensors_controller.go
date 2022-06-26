@@ -8,7 +8,6 @@ import (
 
 type ISensorsController interface {
 	GetSensors(w http.ResponseWriter, r *http.Request)
-	
 }
 
 type sensorsController struct {
@@ -23,7 +22,10 @@ func NewSensorsController() ISensorsController {
 
 func (s sensorsController) GetSensors(w http.ResponseWriter, r *http.Request) {
 
-	SensorsResponse := s.sensorsService.GetSensorsService()
+	SensorsResponse, err := s.sensorsService.GetSensorsService()
+	if err != nil {
+		//TODO:
+	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

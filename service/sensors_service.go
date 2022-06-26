@@ -6,7 +6,7 @@ import (
 )
 
 type ISensorsService interface {
-	GetSensorsService() []dtos.Sensors
+	GetSensorsService() ([]dtos.Sensors,error)
 }
 
 type sensorsService struct {
@@ -21,9 +21,12 @@ func NewSensorsService() ISensorsService {
 
 }
 
-func (s sensorsService) GetSensorsService() []dtos.Sensors {
+func (s sensorsService) GetSensorsService() ([]dtos.Sensors,error) {
 
-	fetchedSensors := s.SensorsRepository.FetchSensors()
+	fetchedSensors, err := s.SensorsRepository.FetchSensors()
+	if err != nil {
+		//TODO:
+	}
 
-	return fetchedSensors
+	return fetchedSensors, nil
 }
