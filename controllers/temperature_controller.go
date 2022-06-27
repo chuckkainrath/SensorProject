@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-type ITemperatureContoller interface {
+type ITemperatureController interface {
 	addTemperature(w http.ResponseWriter, r *http.Request)
 }
 
@@ -18,7 +18,7 @@ type temperatureController struct {
 	tempAddChan        chan<- uint
 }
 
-func NewTemperatureController() ITemperatureContoller {
+func NewTemperatureController() ITemperatureController {
 	return temperatureController{
 		TemperatureService: service.NewTemperatureService(),
 		tempAddChan:        events.GetAddTemperatureChannel(),
