@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/shopspring/decimal"
+)
 
 type User struct {
 	ID             uint
@@ -10,7 +14,7 @@ type User struct {
 
 type Temperature struct {
 	ID          uint
-	Temperature float64
+	Temperature decimal.Decimal `gorm:"type:numeric"`
 	SensorID    uint
 	CreatedAt   time.Time
 }
@@ -24,13 +28,13 @@ type Sensor struct {
 type Threshold struct {
 	ID          uint
 	SensorID    uint
-	Temperature float64
+	Temperature decimal.Decimal `gorm:"type:numeric"`
 }
 
 type ThresholdAlert struct {
 	ID          uint
 	SensorID    string
-	Temperature float64
-	Threshold    float64
+	Temperature decimal.Decimal `gorm:"type:numeric"`
+	Threshold   decimal.Decimal `gorm:"type:numeric"`
 	CreatedAt   time.Time
 }
