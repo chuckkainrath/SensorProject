@@ -4,6 +4,7 @@ import (
 	"SensorProject/service"
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -24,8 +25,8 @@ func writeResponse(w http.ResponseWriter, code int, data interface{}) {
 //GET /sensors/:sensorId/thresholds/:thresholdId
 func (th *ThresholdHandler) getSensorThreshold(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	sensorId := vars["sensor_id"]
-	thresholdId := vars["threshold_id"]
+	sensorId, _ := strconv.Atoi(vars["sensor_id"])
+	thresholdId, _ := strconv.Atoi(vars["threshold_id"])
 	//status := r.URL.Query().Get("status")
 	customers, err := th.service.GetSensorThreshold(sensorId, thresholdId)
 	if err != nil {
