@@ -8,18 +8,15 @@ import (
 
 type IThresholdService interface {
 	GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError)
+	PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
 }
 
-type thresholdService struct {
-	thresholdRepo repository.IThresholdRepo
+type ThresholdService struct {
+	repo repository.ThresholdRepository
 }
 
-func NewThresholdService(repo repository.IThresholdRepo) IThresholdService {
-	return thresholdService{thresholdRepo:repo}
-}
-
-func (t thresholdService) GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError) {
-	c, err := t.thresholdRepo.GetSensorThreshold(sensorId, thresholdId)
+func (t ThresholdService) GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError) {
+	c, err := t.repo.GetSensorThreshold(sensorId, thresholdId)
 	if err != nil {
 		return nil, err
 	}
@@ -29,4 +26,14 @@ func (t thresholdService) GetSensorThreshold(sensorId uint, thresholdId uint) (*
 	return c, nil
 }
 
+func (t ThresholdService) PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
+	c, err := t.repo.PostNewThreshold(sensorId)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
 
+func NewThresholdService(repo repository.ThresholdRepository) ThresholdService {
+	return ThresholdService{repo}
+}

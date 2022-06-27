@@ -7,18 +7,28 @@ import (
 	"net/http"
 )
 
-type getThresholdController struct {
+type getThresholdHandler struct {
+	thresholdService service.IThresholdService
+}
+
+type postThresholdHandler struct {
 	thresholdService service.IThresholdService
 }
 
 func NewGetThresholdController(thresholdService service.IThresholdService) http.Handler {
-	return &getThresholdController{
+	return &getThresholdHandler{
+		thresholdService: thresholdService,
+	}
+}
+
+func NewPostThresholdController(thresholdService service.IThresholdService) http.Handler {
+	return &postThresholdHandler{
 		thresholdService: thresholdService,
 	}
 }
 
 //GET /sensors/:sensorId/thresholds/:thresholdId
-func (th *getThresholdController) getSensorThreshold(w http.ResponseWriter, r *http.Request) {
+func (th *getThresholdHandler) getSensorThreshold(w http.ResponseWriter, r *http.Request) {
 	inputDto := **middleware.GetRequestParams(r).(**dtos.InputGetThresholdDto)
 
 	customers, err := th.thresholdService.GetSensorThreshold(inputDto.SensorID, inputDto.ThresholdID)
@@ -30,18 +40,22 @@ func (th *getThresholdController) getSensorThreshold(w http.ResponseWriter, r *h
 	middleware.AddResultToContext(r, customers, middleware.OutputDataKey)
 }
 
-func (th *getThresholdController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+//POST /sensors/:sensorId/thresholds   //Include to check to see if a threshold already exists, if it does POST request isn't allowed, and a PUT request should be recommended
+func (th *postThresholdHandler) postSensorThreshold(w http.ResponseWriter, r *http.Request) {
+	// vars := mux.Vars(r)
+	// id, _ := strconv.Atoi(vars["sensor_id"])
+	// customer, err := th.service.PostNewThreshold(id)
+	// if err != nil {
+	// 	writeResponse(w, err.Code, err.AsMessage())
+	// } else {
+	// 	writeResponse(w, http.StatusOK, customer)
+	// }
+}
+
+func (th *getThresholdHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	th.getSensorThreshold(w, r)
 }
 
-//POST /sensors/:sensorId/thresholds   //Include to check to see if a threshold already exists, if it does POST request isn't allowed, and a PUT request should be recommended
-//func (th *ThresholdHandler) postId(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id := vars["sensor_id"]
-// 	customer, err := th.service.GetSensorThreshold(id)
-// 	if err != nil {
-// 		writeResponse(w, err.Code, err.AsMessage())
-// 	} else {
-// 		writeResponse(w, http.StatusOK, "customer")
-// 	}
-// }
+func (th *postThresholdHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	th.postSensorThreshold(w, r)
+}
