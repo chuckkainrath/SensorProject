@@ -1,9 +1,6 @@
 package models
 
-import (
-	"github.com/dgrijalva/jwt-go"
-	"time"
-)
+import "time"
 
 type User struct {
 	ID             uint
@@ -36,11 +33,4 @@ type TresholdAlert struct {
 	Temperature float64
 	Treshold    float64
 	CreatedAt   time.Time
-}
-
-// Token struct declaration
-type Token struct {
-	UserID   uint
-	Username string
-	*jwt.StandardClaims
 }
