@@ -1,13 +1,11 @@
 package controllers
 
 import (
+	"SensorProject/dtos"
+	"SensorProject/middleware"
 	"SensorProject/service"
 	"encoding/json"
 	"net/http"
-	"strconv"
-	"time"
-
-	"github.com/gorilla/mux"
 )
 
 type getReadings struct {
@@ -39,42 +37,31 @@ func (g *getStats) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (g *getReadings) GetPerMinuteReadings(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	sensorId, err := strconv.Atoi(vars["sensor_id"])
+	// vars := mux.Vars(r)
+	// sensorId, err := strconv.Atoi(vars["sensor_id"])
 
-	layout := "2006-01-02T15:04:05"
-	from, err1 := time.Parse(layout, vars["from"])
-	to, err2 := time.Parse(layout, vars["to"])
+	// layout := "2006-01-02T15:04:05"
+	// from, err1 := time.Parse(layout, vars["from"])
+	// to, err2 := time.Parse(layout, vars["to"])
 
-	if err != nil || err1 != nil || err2 != nil {
-		// TODO: handle error response
-		return
-	}
+	// if err != nil || err1 != nil || err2 != nil {
+	// 	// TODO: handle error response
+	// 	return
+	// }
+	statsDto := **middleware.GetParams(r).(**dtos.InputStatsDto)
 
-	res, err := t.TemperatureService.GetPerMinuteReading(uint(sensorId), from, to)
+	res, err := g.TemperatureService.GetPerMinuteReading(statsDto.SensorID, statsDto.From, statsDto.To)
 	if err != nil {
-		// TODO: handle error response
+		middleware.AddResultToContext(r, *err, middleware.ErrorKey)
 		return
 	}
-
-	json.NewEncoder(w).Encode(res)
+	middleware.AddResultToContext(r, res, middleware.OutputDataKey)
 }
 
 func (g *getStats) GetMinMaxAverageStats(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	sensorId, err := strconv.Atoi(vars["sensor_id"])
+	statsDto := **middleware.GetParams(r).(**dtos.InputStatsDto)
 
-	layout := "2006-01-02T15:04:05"
-
-	from, err1 := time.Parse(layout, vars["from"])
-	to, err2 := time.Parse(layout, vars["to"])
-
-	if err != nil || err1 != nil || err2 != nil {
-		// TODO: handle error response
-		return
-	}
-
-	res, err := t.TemperatureService.GetMinMaxAverageStats(uint(sensorId), from, to)
+	res, err := g.TemperatureService.GetMinMaxAverageStats(statsDto.SensorID, statsDto.From, statsDto.To)
 	if err != nil {
 		// TODO: handle error response
 		return

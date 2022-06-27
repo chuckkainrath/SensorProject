@@ -36,12 +36,12 @@ func StartServer() {
 		middleware.BindParams(middleware.WriteResponse(getThresholdHandler), &dtos.InputGetThresholdDto{}))
 
 	router.Handle("/sensors/{sensor_id:[0-9]+}/stats/readings",
-		middleware.BindParams(middleware.WriteResponse(getThresholdHandler), &dtos.InputStatsDto{})).
+		middleware.BindParams(middleware.WriteResponse(getReadingsHandler), &dtos.InputStatsDto{})).
 		Methods(http.MethodGet).
 		Queries("from", "{from}").
 		Queries("to", "{to}")
 	router.Handle("/sensors/{sensor_id:[0-9]+}/stats/minmaxaverage",
-		middleware.BindParams(middleware.WriteResponse(getThresholdHandler), &dtos.InputStatsDto{})).
+		middleware.BindParams(middleware.WriteResponse(getStatsHandler), &dtos.InputStatsDto{})).
 		Methods(http.MethodGet).
 		Queries("from", "{from}").
 		Queries("to", "{to}")

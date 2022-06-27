@@ -2,13 +2,13 @@ package middleware
 
 import (
 	"SensorProject/middleware/errors"
+	"SensorProject/util"
 	"context"
 	"encoding/json"
 	"net/http"
 	"reflect"
 
 	"github.com/gorilla/mux"
-	"github.com/mitchellh/mapstructure"
 )
 
 func BindModel(next http.Handler, jsonStruct interface{}) http.Handler {
@@ -35,9 +35,14 @@ func BindModel(next http.Handler, jsonStruct interface{}) http.Handler {
 func BindParams(next http.Handler, paramStruct interface{}) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
+		imap := make(map[string]interface{})
+		for k, v := range vars {
+			imap[k] = v
+		}
 		paramStruct := reflect.New(reflect.TypeOf(paramStruct))
-		err := mapstructure.Decode(vars, paramStruct.Interface())
 
+		paramAny := paramStruct.Interface()
+		err := util.Decode(imap, paramAny)
 		ctx := r.Context()
 		var req *http.Request
 		if err != nil {
@@ -45,7 +50,7 @@ func BindParams(next http.Handler, paramStruct interface{}) http.Handler {
 			writeResponse(w, appErr.Code, nil, &appErr.Message)
 			return
 		} else {
-			req = r.WithContext(context.WithValue(ctx, InputParamsKey, paramStruct))
+			req = r.WithContext(context.WithValue(ctx, InputParamsKey, paramAny))
 		}
 		*r = *req
 

@@ -19,12 +19,12 @@ func WriteResponse(next http.Handler) http.Handler {
 
 		ctx := r.Context()
 		data := ctx.Value(OutputDataKey)
-		err := ctx.Value(ErrorKey).(errors.AppError)
 		if data != nil {
 			writeResponse(w, http.StatusOK, &data, nil)
-		} else {
-			writeResponse(w, err.Code, nil, &err.Message)
+			return
 		}
+		err := ctx.Value(ErrorKey).(errors.AppError)
+		writeResponse(w, err.Code, nil, &err.Message)
 	})
 }
 

@@ -2,15 +2,15 @@ package service
 
 import (
 	"SensorProject/dtos"
+	"SensorProject/middleware/errors"
 	"SensorProject/repository"
 	util "SensorProject/util"
-	"errors"
 	"time"
 )
 
 type ITemperatureService interface {
-	GetPerMinuteReading(sensorId uint, from, to time.Time) (*[]dtos.TemperatureDto, error)
-	GetMinMaxAverageStats(sensorId uint, from, to time.Time) (*[]dtos.TemperatureStatsDto, error)
+	GetPerMinuteReading(sensorId uint, from, to time.Time) (*[]dtos.TemperatureDto, *errors.AppError)
+	GetMinMaxAverageStats(sensorId uint, from, to time.Time) (*[]dtos.TemperatureStatsDto, *errors.AppError)
 }
 
 type temperatureService struct {
@@ -25,21 +25,24 @@ func NewTemperatureService(temperatureRepo repository.ITemperatureRepo, dateChec
 	}
 }
 
-func (t temperatureService) GetPerMinuteReading(sensorId uint, from, to time.Time) (*[]dtos.TemperatureDto, error) {
+func (t temperatureService) GetPerMinuteReading(sensorId uint, from, to time.Time) (*[]dtos.TemperatureDto, *errors.AppError) {
 	duration := 24 * time.Hour
 	lastDay := t.DateChecker.CheckDateBeforeThresold(from, duration)
+	if !lastDay {
+		return nil, errors.NewBadRequestError("`from` time must be within past 24 hours")
+	}
 	maxDuration := t.DateChecker.CheckDateTimeDuration(from, to, duration)
-	if !lastDay || !maxDuration {
-		return nil, errors.New("time error") // TODO: Do a more formal error checking/response
+	if !maxDuration {
+		return nil, errors.NewBadRequestError("`from` to `to` duration must be less than 24 hours")
 	}
 
 	return t.TemperatureRepo.GetPerMinuteReadingInTimeRange(sensorId, from, to)
 }
 
-func (t temperatureService) GetMinMaxAverageStats(sensorId uint, from, to time.Time) (*[]dtos.TemperatureStatsDto, error) {
+func (t temperatureService) GetMinMaxAverageStats(sensorId uint, from, to time.Time) (*[]dtos.TemperatureStatsDto, *errors.AppError) {
 	duration := 30 * 24 * time.Hour
 	if !t.DateChecker.CheckDateTimeDuration(from, to, duration) {
-		return nil, errors.New("time error") // TODO: Do a more formal error checking/response
+		return nil, errors.NewBadRequestError("`from` to `to` duration must be less than 30 days")
 	}
 
 	return t.TemperatureRepo.GetMinMaxAverageInTimeRange(sensorId, to, from)

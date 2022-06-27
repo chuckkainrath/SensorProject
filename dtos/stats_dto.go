@@ -1,7 +1,9 @@
 package dtos
 
+import "time"
+
 type InputStatsDto struct {
-	SensorID uint      `json:"sensor_id"`
-	From     time.Time `json:"from"`
-	To       time.Time `json:"to"`
+	SensorID uint      `mapstructure:"sensor_id"`
+	From     time.Time `mapstructure:"from"`
+	To       time.Time `mapstructure:"to"`
 }
