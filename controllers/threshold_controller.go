@@ -19,7 +19,7 @@ func NewGetThresholdController(thresholdService service.IThresholdService) http.
 
 //GET /sensors/:sensorId/thresholds/:thresholdId
 func (th *getThresholdController) getSensorThreshold(w http.ResponseWriter, r *http.Request) {
-	inputDto := middleware.GetParams(r).(dtos.InputGetThresholdDto)
+	inputDto := **middleware.GetRequestParams(r).(**dtos.InputGetThresholdDto)
 
 	customers, err := th.thresholdService.GetSensorThreshold(inputDto.SensorID, inputDto.ThresholdID)
 

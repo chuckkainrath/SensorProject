@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func BindModel(next http.Handler, jsonStruct interface{}) http.Handler {
+func BindRequestBody(next http.Handler, jsonStruct interface{}) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		jsonStruct := reflect.New(reflect.TypeOf(jsonStruct))
 		err := json.NewDecoder(r.Body).Decode(jsonStruct.Interface())
@@ -32,7 +32,7 @@ func BindModel(next http.Handler, jsonStruct interface{}) http.Handler {
 	})
 }
 
-func BindParams(next http.Handler, paramStruct interface{}) http.Handler {
+func BindRequestParams(next http.Handler, paramStruct interface{}) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		imap := make(map[string]interface{})
@@ -58,10 +58,10 @@ func BindParams(next http.Handler, paramStruct interface{}) http.Handler {
 	})
 }
 
-func GetBody(r *http.Request) interface{} {
+func GetRequestBody(r *http.Request) interface{} {
 	return r.Context().Value(InputBodyKey)
 }
 
-func GetParams(r *http.Request) interface{} {
+func GetRequestParams(r *http.Request) interface{} {
 	return r.Context().Value(InputParamsKey)
 }

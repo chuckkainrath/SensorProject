@@ -34,20 +34,21 @@ func StartServer() {
 
 	// Router
 	router := mux.NewRouter()
+	router.Use(middleware.WriteResponse)
 	router.HandleFunc("/test", test)
 
 	// Thresholds
 	router.Handle("/sensors/{sensor_id:[0-9]+}/thresholds/{threshold_id: [0-9]+}",
-		middleware.BindParams(middleware.WriteResponse(getThresholdHandler), &dtos.InputGetThresholdDto{}))
+		middleware.BindRequestParams(getThresholdHandler, &dtos.InputGetThresholdDto{}))
 
 	// Stats
 	router.Handle("/sensors/{sensor_id:[0-9]+}/stats/readings",
-		middleware.BindParams(middleware.WriteResponse(getReadingsHandler), &dtos.InputStatsDto{})).
+		middleware.BindRequestParams(getReadingsHandler, &dtos.InputStatsDto{})).
 		Methods(http.MethodGet).
 		Queries("from", "{from}").
 		Queries("to", "{to}")
 	router.Handle("/sensors/{sensor_id:[0-9]+}/stats/minmaxaverage",
-		middleware.BindParams(middleware.WriteResponse(getStatsHandler), &dtos.InputStatsDto{})).
+		middleware.BindRequestParams(getStatsHandler, &dtos.InputStatsDto{})).
 		Methods(http.MethodGet).
 		Queries("from", "{from}").
 		Queries("to", "{to}")
