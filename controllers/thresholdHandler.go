@@ -36,13 +36,13 @@ func (th *ThresholdHandler) getSensorThreshold(w http.ResponseWriter, r *http.Re
 }
 
 //POST /sensors/:sensorId/thresholds   //Include to check to see if a threshold already exists, if it does POST request isn't allowed, and a PUT request should be recommended
-//func (th *ThresholdHandler) postId(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id := vars["sensor_id"]
-// 	customer, err := th.service.GetSensorThreshold(id)
-// 	if err != nil {
-// 		writeResponse(w, err.Code, err.AsMessage())
-// 	} else {
-// 		writeResponse(w, http.StatusOK, "customer")
-// 	}
-// }
+func (th *ThresholdHandler) postId(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["sensor_id"])
+	customer, err := th.service.PostNewThreshold(id)
+	if err != nil {
+		writeResponse(w, err.Code, err.AsMessage())
+	} else {
+		writeResponse(w, http.StatusOK, customer)
+	}
+}

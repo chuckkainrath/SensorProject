@@ -8,6 +8,7 @@ import (
 
 type IThresholdService interface {
 	GetSensorThreshold(sensorId int, thresholdId int) (*models.Threshold, *errors.AppError)
+	PostNewThreshold(sensorId int) (*models.Threshold, *errors.AppError)
 }
 
 type ThresholdService struct {
@@ -22,6 +23,14 @@ func (t ThresholdService) GetSensorThreshold(sensorId int, thresholdId int) (*mo
 
 	//map the domain object to our dto and return it -- responsilibity of making a dto is now on the domain)
 
+	return c, nil
+}
+
+func (t ThresholdService) PostNewThreshold(sensorId int) (*models.Threshold, *errors.AppError) {
+	c, err := t.repo.PostNewThreshold(sensorId)
+	if err != nil {
+		return nil, err
+	}
 	return c, nil
 }
 
