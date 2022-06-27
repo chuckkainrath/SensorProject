@@ -4,20 +4,19 @@ ROUTE=$1
 MINMAXAVE="minmaxave"
 PERMINUTE="perminute"
 
-METHOD="POST"
-URL="http://localhost:8000/stats/"
-DATA="'{\"sensor_id\": 1, "
+URL="http://localhost:8000/sensors/1/stats/"
 NOW=$(date +%Y-%m-%dT%H:%M:%S)
 FROM=""
+TO=$(date -d "5 minutes ago" +%Y-%m-%dT%H:%M:%SZ)
 
 if [[ "$ROUTE" == "$MINMAXAVE" ]]; then
   URL+="minmaxaverage"
-  FROM=$(date -d "30 days ago" +%Y-%m-%dT%H:%M:%S)
-elif [[ "$ROUTE" == "perminute" ]]; then
+  FROM=$(date -d "29 days ago" +%Y-%m-%dT%H:%M:%SZ)
+elif [[ "$ROUTE" == "$PERMINUTE" ]]; then
   URL+="readings"
-  FROM=$(date -d "1 day ago" +%Y-%m-%dT%H:%M:%S)
+  FROM=$(date -d "23 hours ago" +%Y-%m-%dT%H:%M:%SZ)
 fi
 
-DATA+="\"from\": ${FROM}, \"to\": ${NOW}}'"
+URL+="?from=${FROM}&to=${TO}"
 
-echo curl $URL -x $METHOD -d $DATA
+echo curl $URL

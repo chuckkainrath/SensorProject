@@ -1,6 +1,8 @@
 package util
 
-import "time"
+import (
+	"time"
+)
 
 type IDateChecker interface {
 	CheckDateTimeDuration(from, to time.Time, duration time.Duration) bool

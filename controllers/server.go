@@ -20,8 +20,14 @@ func StartServer() {
 	tempService := service.NewTemperatureService(tempRepo, dateUtil)
 	tempController := NewTemperatureController(tempService)
 
-	router.HandleFunc("/stats/readings", tempController.GetPerMinuteReadings).Methods(http.MethodPost)
-	router.HandleFunc("/stats/minmaxaverage", tempController.GetMinMaxAverageStats).Methods(http.MethodPost)
+	router.HandleFunc("/sensors/{sensor_id:[0-9]+}/stats/readings", tempController.GetPerMinuteReadings).
+		Methods(http.MethodGet).
+		Queries("from", "{from}").
+		Queries("to", "{to}")
+	router.HandleFunc("/sensors/{sensor_id:[0-9]+}/stats/minmaxaverage", tempController.GetMinMaxAverageStats).
+		Methods(http.MethodGet).
+		Queries("from", "{from}").
+		Queries("to", "{to}")
 
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
 

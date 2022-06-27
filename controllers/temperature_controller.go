@@ -1,10 +1,13 @@
 package controllers
 
 import (
-	"SensorProject/dtos"
 	"SensorProject/service"
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"time"
+
+	"github.com/gorilla/mux"
 )
 
 type ITemperatureContoller interface {
@@ -23,14 +26,19 @@ func NewTemperatureController(temperatureService service.ITemperatureService) IT
 }
 
 func (t temperatureController) GetPerMinuteReadings(w http.ResponseWriter, r *http.Request) {
-	requestDto := &dtos.TemperatureStatsInputDto{}
-	err := json.NewDecoder(r.Body).Decode(requestDto)
-	if err != nil {
+	vars := mux.Vars(r)
+	sensorId, err := strconv.Atoi(vars["sensor_id"])
+
+	layout := "2006-01-02T15:04:05"
+	from, err1 := time.Parse(layout, vars["from"])
+	to, err2 := time.Parse(layout, vars["to"])
+
+	if err != nil || err1 != nil || err2 != nil {
 		// TODO: handle error response
 		return
 	}
 
-	res, err := t.TemperatureService.GetPerMinuteReading(requestDto.SensorId, requestDto.From, requestDto.To)
+	res, err := t.TemperatureService.GetPerMinuteReading(uint(sensorId), from, to)
 	if err != nil {
 		// TODO: handle error response
 		return
@@ -40,14 +48,20 @@ func (t temperatureController) GetPerMinuteReadings(w http.ResponseWriter, r *ht
 }
 
 func (t temperatureController) GetMinMaxAverageStats(w http.ResponseWriter, r *http.Request) {
-	requestDto := &dtos.TemperatureStatsInputDto{}
-	err := json.NewDecoder(r.Body).Decode(requestDto)
-	if err != nil {
+	vars := mux.Vars(r)
+	sensorId, err := strconv.Atoi(vars["sensor_id"])
+
+	layout := "2006-01-02T15:04:05"
+
+	from, err1 := time.Parse(layout, vars["from"])
+	to, err2 := time.Parse(layout, vars["to"])
+
+	if err != nil || err1 != nil || err2 != nil {
 		// TODO: handle error response
 		return
 	}
 
-	res, err := t.TemperatureService.GetMinMaxAverageStats(requestDto.SensorId, requestDto.From, requestDto.To)
+	res, err := t.TemperatureService.GetMinMaxAverageStats(uint(sensorId), from, to)
 	if err != nil {
 		// TODO: handle error response
 		return

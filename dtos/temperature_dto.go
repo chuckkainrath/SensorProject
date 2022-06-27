@@ -8,7 +8,7 @@ import (
 
 type TemperatureDto struct {
 	Temperature decimal.Decimal `json:"temperature"`
-	CreateAt    time.Time       `json:"created_at"`
+	CreatedAt   time.Time       `json:"created_at"`
 }
 
 type TemperatureStatsDto struct {
@@ -16,10 +16,4 @@ type TemperatureStatsDto struct {
 	Max     decimal.Decimal `json:"max"`
 	Average decimal.Decimal `json:"average"`
 	Date    time.Time       `json:"date"`
-}
-
-type TemperatureStatsInputDto struct {
-	SensorId uint      `json:"sensor_id"`
-	From     time.Time `json:"from"`
-	To       time.Time `json:"to"`
 }
