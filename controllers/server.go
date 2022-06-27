@@ -15,26 +15,32 @@ import (
 func StartServer() {
 	dbClient := repository.DB()
 
+	// Util
 	dateUtil := util.NewDateChecker()
 
+	// Repo
 	thresholdRepository := repository.NewThresholdRepositoryDB(dbClient)
 	tempRepo := repository.NewTemperatureRepositoryDB(dbClient)
 
+	// Service
 	thresholdService := service.NewThresholdService(thresholdRepository)
 	tempService := service.NewTemperatureService(tempRepo, dateUtil)
 
+	// Handlers
 	getThresholdHandler := NewGetThresholdController(thresholdService)
 
 	getReadingsHandler := NewGetReadingsHandler(tempService)
 	getStatsHandler := NewGetStatsHandler(tempService)
 
+	// Router
 	router := mux.NewRouter()
 	router.HandleFunc("/test", test)
-	//router.HandleFunc("/sensors/{sensor_id:[0-9]+}/thresholds", th.postId).Methods(http.MethodPost)
-	//router.HandleFunc("/sensors/{sensor_id:[0-9]+}/thresholds/{threshold_id: [0-9]+}", thresholdController.GetSensorThreshold).Methods(http.MethodGet)
+
+	// Thresholds
 	router.Handle("/sensors/{sensor_id:[0-9]+}/thresholds/{threshold_id: [0-9]+}",
 		middleware.BindParams(middleware.WriteResponse(getThresholdHandler), &dtos.InputGetThresholdDto{}))
 
+	// Stats
 	router.Handle("/sensors/{sensor_id:[0-9]+}/stats/readings",
 		middleware.BindParams(middleware.WriteResponse(getReadingsHandler), &dtos.InputStatsDto{})).
 		Methods(http.MethodGet).
@@ -45,6 +51,8 @@ func StartServer() {
 		Methods(http.MethodGet).
 		Queries("from", "{from}").
 		Queries("to", "{to}")
+
+	// Sensors
 
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
 }
