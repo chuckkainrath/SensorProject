@@ -8,15 +8,15 @@ import (
 )
 
 type IThresholdRepo interface {
-	GetSensorThreshold(sensorId string, thresholdId string) (*models.Threshold, *errors.AppError)
+	GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError)
 }
 
-func (r repositoryPostgreSQL) GetSensorThreshold(sensorId string, thresholdId string) (*models.Threshold, *errors.AppError) {
+func (r repositoryPostgreSQL) GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError) {
 	thresholdSql := "select id, sensor_id, temperature, from thresholds where id = ?"
 	var t models.Threshold
 	row := r.db.Raw(thresholdSql, thresholdId)
-	err := row.Scan(&t)
-	if err != nil {
+	result := row.Scan(&t)
+	if result.Error != nil {
 		return nil, errors.NewNotFoundError("Threshold Not Found")
 	} else {
 		return nil, errors.NewUnexpectedError("unexpected database error")

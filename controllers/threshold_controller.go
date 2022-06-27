@@ -1,48 +1,37 @@
 package controllers
 
 import (
+	"SensorProject/dtos"
+	"SensorProject/middleware"
 	"SensorProject/service"
-	"encoding/json"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
-type IThresholdController interface {
-	GetSensorThreshold(w http.ResponseWriter, r *http.Request)
-}
-
-type thresholdController struct {
+type getThresholdController struct {
 	thresholdService service.IThresholdService
 }
 
-func NewThresholdController(thresholdService service.IThresholdService) IThresholdController {
-	return thresholdController{
+func NewThresholdController(thresholdService service.IThresholdService) http.Handler {
+	return &getThresholdController{
 		thresholdService: thresholdService,
 	}
 }
 
-func writeResponse(w http.ResponseWriter, code int, data interface{}) {
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(code)
-	//if this doesn't work we want the application to shutdown and show you the error message with a panic
-	if err := json.NewEncoder(w).Encode(data); err != nil {
-		panic(err)
+//GET /sensors/:sensorId/thresholds/:thresholdId
+func (th *getThresholdController) getSensorThreshold(w http.ResponseWriter, r *http.Request) {
+	inputDto := middleware.GetParams(r).(dtos.InputGetThresholdDto)
+
+	customers, err := th.thresholdService.GetSensorThreshold(inputDto.SensorID, inputDto.ThresholdID)
+
+	if err != nil {
+		middleware.AddResultToContext(r, *err, middleware.ErrorKey)
+		return
 	}
+	middleware.AddResultToContext(r, customers, middleware.OutputDataKey)
 }
 
-//GET /sensors/:sensorId/thresholds/:thresholdId
-func (th thresholdController) GetSensorThreshold(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	sensorId := vars["sensor_id"]
-	thresholdId := vars["threshold_id"]
-	//status := r.URL.Query().Get("status")
-	customers, err := th.thresholdService.GetSensorThreshold(sensorId, thresholdId)
-	
-	if err != nil {
-		writeResponse(w, err.Code, err.AsMessage())
-	}
-	writeResponse(w, http.StatusOK, customers)
+func (th *getThresholdController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	th.getSensorThreshold(w, r)
 }
 
 //POST /sensors/:sensorId/thresholds   //Include to check to see if a threshold already exists, if it does POST request isn't allowed, and a PUT request should be recommended
