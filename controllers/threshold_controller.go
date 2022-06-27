@@ -11,7 +11,7 @@ type getThresholdController struct {
 	thresholdService service.IThresholdService
 }
 
-func NewThresholdController(thresholdService service.IThresholdService) http.Handler {
+func NewGetThresholdController(thresholdService service.IThresholdService) http.Handler {
 	return &getThresholdController{
 		thresholdService: thresholdService,
 	}
