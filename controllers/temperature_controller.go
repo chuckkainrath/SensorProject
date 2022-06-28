@@ -10,7 +10,7 @@ import (
 
 type postTemperatureHandler struct {
 	TemperatureService service.TemperatureService
-	tempAddChan        chan<- uint
+	tempAddChan        chan<- dtos.AddTemperatureDto
 }
 
 func NewPostTemperatureHandler(tempService service.TemperatureService) http.Handler {
@@ -32,5 +32,5 @@ func (p *postTemperatureHandler) postTemperature(w http.ResponseWriter, r *http.
 		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
 	}
-	p.tempAddChan <- tempDto.SensorID
+	p.tempAddChan <- tempDto
 }
