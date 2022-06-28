@@ -3,10 +3,10 @@ package controllers
 import (
 	"SensorProject/dtos"
 	"SensorProject/middleware"
+	"SensorProject/middleware/auth"
 	"SensorProject/repository"
 	"SensorProject/service"
 	"SensorProject/util"
-	"SensorProject/middleware/auth"
 	"log"
 	"net/http"
 
@@ -20,28 +20,44 @@ func StartServer() {
 	dateUtil := util.NewDateChecker()
 
 	// Repo
-	thresholdRepository := repository.NewThresholdRepositoryDB(dbClient)
+	thresholdRepo := repository.NewThresholdRepositoryDB(dbClient)
 	tempRepo := repository.NewTemperatureRepositoryDB(dbClient)
+	sensorRepo := repository.NewSensorsRepositoryDB(dbClient)
+	alertRepo := repository.NewThresholdAlertRepositoryDB(dbClient)
+	usersRepo := repository.NewUsersRepositoryDB(dbClient)
 
 	// Service
-	thresholdService := service.NewThresholdService(thresholdRepository)
+	thresholdService := service.NewThresholdService(thresholdRepo, tempRepo, alertRepo)
 	tempService := service.NewTemperatureService(tempRepo, dateUtil)
+	sensorService := service.NewSensorsService(sensorRepo)
+	userService := service.NewUserService(usersRepo)
 
-	// Handlers
-	getThresholdHandler := NewGetThresholdController(thresholdService)
+	// Handlers - Threshold
+	getThresholdHandler := NewGetThresholdHandler(thresholdService)
+	postThresholdHandler := NewPostThresholdHandler(thresholdService)
 
+	// Handlers - Temperature
+	postTemperatureHandler := NewPostTemperatureHandler(tempService)
+
+	// Handlers - Stats
 	getReadingsHandler := NewGetReadingsHandler(tempService)
 	getStatsHandler := NewGetStatsHandler(tempService)
 
+	// Handlers - Sensor
+	getAllSensorsHandler := NewGetAllSensorsHandler(sensorService)
+
+	// Handlers - User
+	userLoginHandler := NewUserLoginHandler(userService)
+
 	// Router
 	router := mux.NewRouter()
-	router.Use(middleware.WriteResponse) 
+	router.Use(middleware.WriteResponse)
 
 	// User
-	router.HandleFunc("/login", NewUserController().Login).Methods("POST")
+	router.Handle("/login", middleware.BindRequestBody(userLoginHandler, dtos.UserDto{})).Methods(http.MethodPost)
 
 	// Temperature
-	router.HandleFunc("/sensors/temperatures", NewTemperatureController().addTemperature).Methods(http.MethodPost)
+	router.Handle("/sensors/temperatures", middleware.BindRequestBody(postTemperatureHandler, dtos.AddTemperatureDto{})).Methods(http.MethodPost)
 
 	// Auth subrouter
 	s := router.PathPrefix("/").Subrouter()
@@ -49,7 +65,10 @@ func StartServer() {
 
 	// Thresholds
 	s.Handle("/sensors/{sensor_id:[0-9]+}/thresholds/{threshold_id: [0-9]+}",
-		middleware.BindRequestParams(getThresholdHandler, &dtos.InputGetThresholdDto{}))
+		middleware.BindRequestParams(getThresholdHandler, &dtos.InputGetThresholdDto{})).Methods(http.MethodGet)
+
+	s.Handle("/sensors/{sensor_id:[0-9]+}/thresholds",
+		middleware.BindRequestBody(postThresholdHandler, dtos.AddThresholdDto{})).Methods(http.MethodPost)
 
 	// Stats
 	s.Handle("/sensors/{sensor_id:[0-9]+}/stats/readings",
@@ -63,12 +82,8 @@ func StartServer() {
 		Queries("from", "{from}").
 		Queries("to", "{to}")
 
-
 	// Sensors
-	s.HandleFunc("/sensors", NewSensorsController().GetSensors).Methods(http.MethodGet)
-	
-	// auth routes
-	
+	s.Handle("/sensors", getAllSensorsHandler).Methods(http.MethodGet)
 
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
 }

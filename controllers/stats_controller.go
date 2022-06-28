@@ -3,24 +3,25 @@ package controllers
 import (
 	"SensorProject/dtos"
 	"SensorProject/middleware"
+	"SensorProject/service"
 	"net/http"
 )
 
 type getReadings struct {
-	TemperatureService service.ITemperatureService
+	TemperatureService service.TemperatureService
 }
 
 type getStats struct {
-	TemperatureService service.ITemperatureService
+	TemperatureService service.TemperatureService
 }
 
-func NewGetReadingsHandler(temperatureService service.ITemperatureService) http.Handler {
+func NewGetReadingsHandler(temperatureService service.TemperatureService) http.Handler {
 	return &getReadings{
 		TemperatureService: temperatureService,
 	}
 }
 
-func NewGetStatsHandler(temperatureService service.ITemperatureService) http.Handler {
+func NewGetStatsHandler(temperatureService service.TemperatureService) http.Handler {
 	return &getStats{
 		TemperatureService: temperatureService,
 	}

@@ -1,23 +1,29 @@
 package repository
 
-import "SensorProject/models"
+import (
+	"SensorProject/middleware/errors"
+	"SensorProject/models"
 
-type IUserRepo interface {
-	GetUser(username string) (*models.User, error)
+	"gorm.io/gorm"
+)
+
+type UserRepository interface {
+	GetUser(username string) (*models.User, *errors.AppError)
 }
 
-type userRepo struct {
+type userRepository struct {
+	db *gorm.DB
 }
 
-func NewUserRepo() IUserRepo {
-	return userRepo{}
+func NewUsersRepositoryDB(db *gorm.DB) userRepository {
+	return userRepository{db}
 }
 
-func (u userRepo) GetUser(username string) (*models.User, error) {
+func (u userRepository) GetUser(username string) (*models.User, *errors.AppError) {
 	var user *models.User
 	result := DB().Where("user_name = ?", username).First(user)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, errors.NewNotFoundError("User not found")
 	}
 	return user, nil
 }

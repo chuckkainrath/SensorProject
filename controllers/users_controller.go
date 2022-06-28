@@ -2,36 +2,30 @@ package controllers
 
 import (
 	"SensorProject/dtos"
+	"SensorProject/middleware"
 	"SensorProject/service"
-	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
-type IUserController interface {
-	Login(w http.ResponseWriter, r *http.Request)
+type userLoginHandler struct {
+	UserService service.UserService
 }
 
-type userController struct {
-	UserService service.IUserService
+func NewUserLoginHandler(userService service.UserService) http.Handler {
+	return &userLoginHandler{UserService: userService}
 }
 
-func NewUserController() IUserController {
-	return userController{UserService: service.NewUserService()}
+func (u *userLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	u.Login(w, r)
 }
 
-func (u userController) Login(w http.ResponseWriter, r *http.Request) {
-	user := &dtos.UserDto{}
-	err := json.NewDecoder(r.Body).Decode(user)
-	if err != nil {
-		// TODO: Invalid Request Response
-		return
-	}
+func (u *userLoginHandler) Login(w http.ResponseWriter, r *http.Request) {
+	user := **middleware.GetRequestBody(r).(**dtos.UserDto)
+
 	token, err := u.UserService.GetUserToken(user.UserName, user.Password)
 	if err != nil {
-		// TODO: Could not login
+		middleware.AddResultToContext(r, *err, middleware.ErrorKey)
 		return
 	}
-	// TODO: Token response (modify line below)
-	fmt.Fprintf(w, "Bearer %s\n", *token)
+	middleware.AddResultToContext(r, token, middleware.OutputDataKey)
 }

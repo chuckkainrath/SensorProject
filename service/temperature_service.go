@@ -2,40 +2,34 @@ package service
 
 import (
 	"SensorProject/dtos"
-<<<<<<< HEAD
 	"SensorProject/middleware/errors"
+	"SensorProject/models"
 	"SensorProject/repository"
 	util "SensorProject/util"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
-type ITemperatureService interface {
-	GetPerMinuteReading(sensorId uint, from, to time.Time) (*[]dtos.TemperatureDto, *errors.AppError)
+type TemperatureService interface {
+	GetPerMinuteReading(sensorId uint, from, to time.Time) (*[]dtos.GetTemperatureDto, *errors.AppError)
 	GetMinMaxAverageStats(sensorId uint, from, to time.Time) (*[]dtos.TemperatureStatsDto, *errors.AppError)
-=======
-	"SensorProject/models"
-	"SensorProject/repository"
-)
-
-type ITemperatureService interface {
-	AddTemperature(tempDto dtos.AddTemperatureDto) error
->>>>>>> brooke-dev
+	AddTemperature(sensorId uint, temperature decimal.Decimal) *errors.AppError
 }
 
 type temperatureService struct {
-	TemperatureRepo repository.ITemperatureRepo
-<<<<<<< HEAD
-	DateChecker     util.IDateChecker
+	TemperatureRepo repository.TemperatureRepository
+	DateChecker     util.DateChecker
 }
 
-func NewTemperatureService(temperatureRepo repository.ITemperatureRepo, dateChecker util.IDateChecker) ITemperatureService {
+func NewTemperatureService(temperatureRepo repository.TemperatureRepository, dateChecker util.DateChecker) TemperatureService {
 	return temperatureService{
 		TemperatureRepo: temperatureRepo,
 		DateChecker:     dateChecker,
 	}
 }
 
-func (t temperatureService) GetPerMinuteReading(sensorId uint, from, to time.Time) (*[]dtos.TemperatureDto, *errors.AppError) {
+func (t temperatureService) GetPerMinuteReading(sensorId uint, from, to time.Time) (*[]dtos.GetTemperatureDto, *errors.AppError) {
 	duration := 24 * time.Hour
 	lastDay := t.DateChecker.CheckDateBeforeThresold(from, duration)
 	if !lastDay {
@@ -56,22 +50,12 @@ func (t temperatureService) GetMinMaxAverageStats(sensorId uint, from, to time.T
 	}
 
 	return t.TemperatureRepo.GetMinMaxAverageInTimeRange(sensorId, to, from)
-=======
 }
 
-func NewTemperatureService() ITemperatureService {
-	return temperatureService{
-		TemperatureRepo: repository.NewTemperatureRepo(),
-	}
-}
-
-func (t temperatureService) AddTemperature(tempDto dtos.AddTemperatureDto) error {
-
+func (t temperatureService) AddTemperature(sensorId uint, temperature decimal.Decimal) *errors.AppError {
 	temp := models.Temperature{
-		Temperature: tempDto.Temperature,
-		SensorID:    tempDto.SensorID,
+		Temperature: temperature,
+		SensorID:    sensorId,
 	}
 	return t.TemperatureRepo.AddTemperatureToDb(&temp)
-
->>>>>>> brooke-dev
 }

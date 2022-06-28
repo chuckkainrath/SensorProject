@@ -1,36 +1,36 @@
 package service
 
 import (
+	"SensorProject/middleware/errors"
 	"SensorProject/models"
 	"SensorProject/repository"
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
-type IUserService interface {
-	GetUserToken(username, password string) (*string, error)
+type UserService interface {
+	GetUserToken(username, password string) (*string, *errors.AppError)
 }
 
 type userService struct {
-	UserRepo repository.IUserRepo
+	UserRepo repository.UserRepository
 }
 
-func NewUserService() IUserService {
-	return userService{UserRepo: repository.NewUserRepo()}
+func NewUserService(userRepo repository.UserRepository) UserService {
+	return userService{UserRepo: userRepo}
 }
 
-func (u userService) GetUserToken(username, password string) (*string, error) {
+func (u userService) GetUserToken(username, password string) (*string, *errors.AppError) {
 	user, err := u.UserRepo.GetUser(username)
 	if err != nil {
-		// TODO: Figure out error response
 		return nil, err
 	}
 
 	errPassword := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password))
 	if errPassword != nil {
-		// TODO: Figure out error response
-		return nil, errPassword
+		return nil, errors.NewBadRequestError("Username/Password combination not found")
 	}
 
 	expiresAt := time.Now().Add(time.Minute * 100000).Unix()
@@ -38,17 +38,16 @@ func (u userService) GetUserToken(username, password string) (*string, error) {
 	tk := &models.Token{
 		UserID:   user.ID,
 		Username: user.Username,
-		StandardClaims: &jwt.StandardClaims{
+		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expiresAt,
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
 
-	tokenString, err := token.SignedString([]byte("secret"))
-	if err != nil {
-		// TODO: Figure out error response
-		return nil, err
+	tokenString, tknErr := token.SignedString([]byte("secret"))
+	if tknErr != nil {
+		return nil, errors.NewUnexpectedError("Unexpected error while processing request")
 	}
 	return &tokenString, nil
 }

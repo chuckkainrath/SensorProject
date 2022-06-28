@@ -8,20 +8,20 @@ import (
 )
 
 type getThresholdHandler struct {
-	thresholdService service.IThresholdService
+	thresholdService service.ThresholdService
 }
 
 type postThresholdHandler struct {
-	thresholdService service.IThresholdService
+	thresholdService service.ThresholdService
 }
 
-func NewGetThresholdController(thresholdService service.IThresholdService) http.Handler {
+func NewGetThresholdHandler(thresholdService service.ThresholdService) http.Handler {
 	return &getThresholdHandler{
 		thresholdService: thresholdService,
 	}
 }
 
-func NewPostThresholdController(thresholdService service.IThresholdService) http.Handler {
+func NewPostThresholdHandler(thresholdService service.ThresholdService) http.Handler {
 	return &postThresholdHandler{
 		thresholdService: thresholdService,
 	}

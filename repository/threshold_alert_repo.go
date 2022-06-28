@@ -1,18 +1,30 @@
 package repository
 
-import "SensorProject/models"
+import (
+	"SensorProject/middleware/errors"
+	"SensorProject/models"
 
-type IThresholdAlertRepo interface {
-	AddThresholdAlert(alert *models.ThresholdAlert) error
+	"gorm.io/gorm"
+)
+
+type ThresholdAlertRepository interface {
+	AddThresholdAlert(alert *models.ThresholdAlert) (err *errors.AppError)
 }
 
-type thresholdAlertRepo struct{}
-
-func NewThresholdAlertRepo() IThresholdAlertRepo {
-	return thresholdAlertRepo{}
+type thresholdAlertRepository struct {
+	db *gorm.DB
 }
 
-func (t thresholdAlertRepo) AddThresholdAlert(alert *models.ThresholdAlert) error {
+func NewThresholdAlertRepositoryDB(db *gorm.DB) ThresholdAlertRepository {
+	return thresholdAlertRepository{
+		db: db,
+	}
+}
+
+func (t thresholdAlertRepository) AddThresholdAlert(alert *models.ThresholdAlert) (err *errors.AppError) {
 	result := DB().Create(alert)
-	return result.Error
+	if result.Error != nil {
+		err = errors.NewUnexpectedError("Unexpected error while processing request")
+	}
+	return
 }

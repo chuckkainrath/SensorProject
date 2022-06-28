@@ -1,6 +1,6 @@
 package dtos
 
-type ThresholdDto struct {
+type AddThresholdDto struct {
 	SensorID    uint    `json:"sensor_id"`
 	Temperature float64 `json:"temperature"`
 }

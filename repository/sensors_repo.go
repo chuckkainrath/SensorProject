@@ -1,23 +1,30 @@
 package repository
 
-import "SensorProject/dtos"
+import (
+	"SensorProject/dtos"
+	"SensorProject/middleware/errors"
 
-type ISensorsRepository interface {
-	FetchSensors() ([]dtos.Sensors,error)
+	"gorm.io/gorm"
+)
+
+type SensorsRepository interface {
+	FetchSensors() ([]dtos.Sensors, *errors.AppError)
 }
-type sensorsRepository struct{}
-
-func NewSensorsRepository() ISensorsRepository {
-	return sensorsRepository{}
+type sensorsRepository struct {
+	db *gorm.DB
 }
 
-func (s sensorsRepository) FetchSensors() ([]dtos.Sensors,error) {
+func NewSensorsRepositoryDB(db *gorm.DB) SensorsRepository {
+	return sensorsRepository{db: db}
+}
+
+// TODO: USERID
+func (s sensorsRepository) FetchSensors() ([]dtos.Sensors, *errors.AppError) {
 	var sensors []dtos.Sensors
-	result := DB().Select("sensors.id,sensors.sensor_name,thresholds.temperature").Joins("Left JOIN thresholds on sensors.id = thresholds.sensor_id").Find(&sensors)
+	result := s.db.Select("sensors.id, sensors.sensor_name, thresholds.temperature").Joins("Left JOIN thresholds on sensors.id = thresholds.sensor_id").Find(&sensors)
 	if result.Error != nil {
-		//TODO: 
-
+		return nil, errors.NewUnexpectedError("Unexpected error while processing request")
 	}
-	return sensors,nil
+	return sensors, nil
 
 }

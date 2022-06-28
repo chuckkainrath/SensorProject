@@ -1,26 +1,38 @@
 package service
 
 import (
-<<<<<<< HEAD
 	"SensorProject/middleware/errors"
-=======
->>>>>>> brooke-dev
 	"SensorProject/models"
 	"SensorProject/repository"
 )
 
-<<<<<<< HEAD
-type IThresholdService interface {
+var tempCount = 5
+
+type ThresholdService interface {
 	GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError)
 	PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
+
+	CheckForThresholdBreach(sensorId uint)
 }
 
-type ThresholdService struct {
-	repo repository.ThresholdRepository
+type thresholdService struct {
+	ThresholdRepo      repository.ThresholdRepository
+	TemperatureRepo    repository.TemperatureRepository
+	ThresholdAlertRepo repository.ThresholdAlertRepository
 }
 
-func (t ThresholdService) GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError) {
-	c, err := t.repo.GetSensorThreshold(sensorId, thresholdId)
+func NewThresholdService(thresholdRepo repository.ThresholdRepository,
+	tempRepo repository.TemperatureRepository,
+	alertRepo repository.ThresholdAlertRepository) ThresholdService {
+	return thresholdService{
+		ThresholdRepo:      thresholdRepo,
+		TemperatureRepo:    tempRepo,
+		ThresholdAlertRepo: alertRepo,
+	}
+}
+
+func (t thresholdService) GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError) {
+	c, err := t.ThresholdRepo.GetSensorThreshold(sensorId, thresholdId)
 	if err != nil {
 		return nil, err
 	}
@@ -30,36 +42,12 @@ func (t ThresholdService) GetSensorThreshold(sensorId uint, thresholdId uint) (*
 	return c, nil
 }
 
-func (t ThresholdService) PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
-	c, err := t.repo.PostNewThreshold(sensorId)
+func (t thresholdService) PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
+	c, err := t.ThresholdRepo.PostNewThreshold(sensorId)
 	if err != nil {
 		return nil, err
 	}
 	return c, nil
-}
-
-func NewThresholdService(repo repository.ThresholdRepository) ThresholdService {
-	return ThresholdService{repo}
-}
-=======
-var tempCount = 5
-
-type IThresholdService interface {
-	CheckForThresholdBreach(sensorId uint)
-}
-
-type thresholdService struct {
-	ThresholdRepo      repository.IThresholdRepo
-	TemperatureRepo    repository.ITemperatureRepo
-	ThresholdAlertRepo repository.IThresholdAlertRepo
-}
-
-func NewThresholdService() IThresholdService {
-	return thresholdService{
-		ThresholdRepo:      repository.NewThresholdRepo(),
-		TemperatureRepo:    repository.NewTemperatureRepo(),
-		ThresholdAlertRepo: repository.NewThresholdAlertRepo(),
-	}
 }
 
 func (t thresholdService) CheckForThresholdBreach(sensorId uint) {
@@ -74,7 +62,7 @@ func (t thresholdService) CheckForThresholdBreach(sensorId uint) {
 		// TODO: log error ?
 		return
 	}
-	
+
 	for _, temp := range temps {
 		if temp.LessThan(*threshold) {
 			return
@@ -82,11 +70,10 @@ func (t thresholdService) CheckForThresholdBreach(sensorId uint) {
 	}
 
 	alert := &models.ThresholdAlert{
-		SensorID: sensorId,
-		Threshold: *threshold,
+		SensorID:    sensorId,
+		Threshold:   *threshold,
 		Temperature: temps[0],
 	}
 
 	t.ThresholdAlertRepo.AddThresholdAlert(alert)
 }
->>>>>>> brooke-dev

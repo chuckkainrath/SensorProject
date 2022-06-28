@@ -1,6 +1,7 @@
 package event
 
 import (
+	"SensorProject/repository"
 	"SensorProject/service"
 	"sync"
 )
@@ -51,7 +52,11 @@ func listenToAddTemperature() {
 }
 
 func respondToAddTemperature(tempChan <-chan uint) {
-	thresholdService := service.NewThresholdService()
+	dbClient := repository.DB()
+	thresholdRepo := repository.NewThresholdRepositoryDB(dbClient)
+	tempRepo := repository.NewTemperatureRepositoryDB(dbClient)
+	alertRepo := repository.NewThresholdAlertRepositoryDB(dbClient)
+	thresholdService := service.NewThresholdService(thresholdRepo, tempRepo, alertRepo)
 
 	for {
 		sensorId := <-tempChan

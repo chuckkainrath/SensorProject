@@ -4,14 +4,14 @@ import (
 	"time"
 )
 
-type IDateChecker interface {
+type DateChecker interface {
 	CheckDateTimeDuration(from, to time.Time, duration time.Duration) bool
 	CheckDateBeforeThresold(date time.Time, duration time.Duration) bool
 }
 
 type dateChecker struct{}
 
-func NewDateChecker() IDateChecker {
+func NewDateChecker() DateChecker {
 	return dateChecker{}
 }
 

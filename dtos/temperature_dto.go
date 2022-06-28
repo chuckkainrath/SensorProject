@@ -6,10 +6,10 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-// type TemperatureDto struct {
-// 	Temperature decimal.Decimal `json:"temperature"`
-// 	CreatedAt   time.Time       `json:"created_at"`
-// }
+type GetTemperatureDto struct {
+	Temperature decimal.Decimal `json:"temperature"`
+	CreatedAt   time.Time       `json:"created_at"`
+}
 
 type TemperatureStatsDto struct {
 	Min     decimal.Decimal `json:"min"`

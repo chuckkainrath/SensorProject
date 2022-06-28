@@ -2,31 +2,25 @@ package service
 
 import (
 	"SensorProject/dtos"
+	"SensorProject/middleware/errors"
 	"SensorProject/repository"
 )
 
-type ISensorsService interface {
-	GetSensorsService() ([]dtos.Sensors,error)
+type SensorsService interface {
+	GetSensorsService() ([]dtos.Sensors, *errors.AppError)
 }
 
 type sensorsService struct {
-	SensorsRepository repository.ISensorsRepository
+	SensorsRepository repository.SensorsRepository
 }
 
-func NewSensorsService() ISensorsService {
-
+func NewSensorsService(sensorRepo repository.SensorsRepository) SensorsService {
 	return sensorsService{
-		SensorsRepository: repository.NewSensorsRepository(),
+		SensorsRepository: sensorRepo,
 	}
-
 }
 
-func (s sensorsService) GetSensorsService() ([]dtos.Sensors,error) {
-
-	fetchedSensors, err := s.SensorsRepository.FetchSensors()
-	if err != nil {
-		//TODO:
-	}
-
-	return fetchedSensors, nil
+// TODO: USER ID
+func (s sensorsService) GetSensorsService() ([]dtos.Sensors, *errors.AppError) {
+	return s.SensorsRepository.FetchSensors()
 }

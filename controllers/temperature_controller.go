@@ -8,13 +8,13 @@ import (
 )
 
 type postTemperatureHandler struct {
-	TemperatureService service.ITemperatureService
+	TemperatureService service.TemperatureService
 	tempAddChan        chan<- uint
 }
 
-func NewPostTemperatureHandler() http.Handler {
+func NewPostTemperatureHandler(tempService service.TemperatureService) http.Handler {
 	return &postTemperatureHandler{
-		TemperatureService: service.NewTemperatureService(),
+		TemperatureService: tempService,
 		//tempAddChan:        events.GetAddTemperatureChannel(),
 	}
 }

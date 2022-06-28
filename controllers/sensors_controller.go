@@ -1,38 +1,31 @@
 package controllers
 
 import (
+	"SensorProject/middleware"
 	"SensorProject/service"
-	"encoding/json"
 	"net/http"
 )
 
-type ISensorsController interface {
-	GetSensors(w http.ResponseWriter, r *http.Request)
+type getAllSensorsHandler struct {
+	SensorsService service.SensorsService
 }
 
-type sensorsController struct {
-	sensorsService service.ISensorsService
-}
-
-func NewSensorsController() ISensorsController {
-	return sensorsController{
-		sensorsService: service.NewSensorsService(),
+func NewGetAllSensorsHandler(sensorsService service.SensorsService) http.Handler {
+	return &getAllSensorsHandler{
+		SensorsService: sensorsService,
 	}
 }
 
-func (s sensorsController) GetSensors(w http.ResponseWriter, r *http.Request) {
+func (g *getAllSensorsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	g.GetSensors(w, r)
+}
 
-	SensorsResponse, err := s.sensorsService.GetSensorsService()
+// TODO: USER ID
+func (g *getAllSensorsHandler) GetSensors(w http.ResponseWriter, r *http.Request) {
+	sensors, err := g.SensorsService.GetSensorsService()
 	if err != nil {
-		//TODO:
+		middleware.AddResultToContext(r, *err, middleware.ErrorKey)
+		return
 	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	jsonResp, err := json.Marshal(SensorsResponse)
-	if err != nil {
-		panic(err)
-	}
-	w.Write(jsonResp)
-
+	middleware.AddResultToContext(r, sensors, middleware.OutputDataKey)
 }
