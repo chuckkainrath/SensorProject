@@ -2,6 +2,7 @@ package service
 
 import (
 	"SensorProject/dtos"
+<<<<<<< HEAD
 	"SensorProject/middleware/errors"
 	"SensorProject/repository"
 	util "SensorProject/util"
@@ -11,10 +12,19 @@ import (
 type ITemperatureService interface {
 	GetPerMinuteReading(sensorId uint, from, to time.Time) (*[]dtos.TemperatureDto, *errors.AppError)
 	GetMinMaxAverageStats(sensorId uint, from, to time.Time) (*[]dtos.TemperatureStatsDto, *errors.AppError)
+=======
+	"SensorProject/models"
+	"SensorProject/repository"
+)
+
+type ITemperatureService interface {
+	AddTemperature(tempDto dtos.AddTemperatureDto) error
+>>>>>>> brooke-dev
 }
 
 type temperatureService struct {
 	TemperatureRepo repository.ITemperatureRepo
+<<<<<<< HEAD
 	DateChecker     util.IDateChecker
 }
 
@@ -46,4 +56,22 @@ func (t temperatureService) GetMinMaxAverageStats(sensorId uint, from, to time.T
 	}
 
 	return t.TemperatureRepo.GetMinMaxAverageInTimeRange(sensorId, to, from)
+=======
+}
+
+func NewTemperatureService() ITemperatureService {
+	return temperatureService{
+		TemperatureRepo: repository.NewTemperatureRepo(),
+	}
+}
+
+func (t temperatureService) AddTemperature(tempDto dtos.AddTemperatureDto) error {
+
+	temp := models.Temperature{
+		Temperature: tempDto.Temperature,
+		SensorID:    tempDto.SensorID,
+	}
+	return t.TemperatureRepo.AddTemperatureToDb(&temp)
+
+>>>>>>> brooke-dev
 }

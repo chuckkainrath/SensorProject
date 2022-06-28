@@ -18,13 +18,19 @@ func WriteResponse(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 
 		ctx := r.Context()
+		err := ctx.Value(ErrorKey).(*errors.AppError)
+		if err != nil {
+			writeResponse(w, err.Code, nil, &err.Message)
+			return
+		}
+
 		data := ctx.Value(OutputDataKey)
 		if data != nil {
 			writeResponse(w, http.StatusOK, &data, nil)
 			return
 		}
-		err := ctx.Value(ErrorKey).(errors.AppError)
-		writeResponse(w, err.Code, nil, &err.Message)
+
+		writeResponse(w, http.StatusOK, nil, nil)
 	})
 }
 

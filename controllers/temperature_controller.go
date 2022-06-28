@@ -7,52 +7,29 @@ import (
 	"net/http"
 )
 
-type getReadings struct {
+type postTemperatureHandler struct {
 	TemperatureService service.ITemperatureService
+	tempAddChan        chan<- uint
 }
 
-type getStats struct {
-	TemperatureService service.ITemperatureService
-}
-
-func NewGetReadingsHandler(temperatureService service.ITemperatureService) http.Handler {
-	return &getReadings{
-		TemperatureService: temperatureService,
+func NewPostTemperatureHandler() http.Handler {
+	return &postTemperatureHandler{
+		TemperatureService: service.NewTemperatureService(),
+		//tempAddChan:        events.GetAddTemperatureChannel(),
 	}
 }
 
-func NewGetStatsHandler(temperatureService service.ITemperatureService) http.Handler {
-	return &getStats{
-		TemperatureService: temperatureService,
-	}
+func (p *postTemperatureHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	p.postTemperature(w, r)
 }
 
-func (g *getReadings) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	g.GetPerMinuteReadings(w, r)
-}
+func (p *postTemperatureHandler) postTemperature(w http.ResponseWriter, r *http.Request) {
+	tempDto := **middleware.GetRequestBody(r).(**dtos.AddTemperatureDto)
 
-func (g *getStats) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	g.GetMinMaxAverageStats(w, r)
-}
-
-func (g *getReadings) GetPerMinuteReadings(w http.ResponseWriter, r *http.Request) {
-	statsDto := **middleware.GetRequestParams(r).(**dtos.InputStatsDto)
-
-	res, err := g.TemperatureService.GetPerMinuteReading(statsDto.SensorID, statsDto.From, statsDto.To)
+	err := p.TemperatureService.AddTemperature(tempDto.SensorID, tempDto.Temperature)
 	if err != nil {
 		middleware.AddResultToContext(r, *err, middleware.ErrorKey)
 		return
 	}
-	middleware.AddResultToContext(r, res, middleware.OutputDataKey)
-}
-
-func (g *getStats) GetMinMaxAverageStats(w http.ResponseWriter, r *http.Request) {
-	statsDto := **middleware.GetRequestParams(r).(**dtos.InputStatsDto)
-
-	res, err := g.TemperatureService.GetMinMaxAverageStats(statsDto.SensorID, statsDto.From, statsDto.To)
-	if err != nil {
-		middleware.AddResultToContext(r, *err, middleware.ErrorKey)
-		return
-	}
-	middleware.AddResultToContext(r, res, middleware.OutputDataKey)
+	//t.tempAddChan <- temp.SensorID
 }
