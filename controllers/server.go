@@ -34,8 +34,7 @@ func StartServer() {
 
 	// Router
 	router := mux.NewRouter()
-	router.Use(middleware.WriteResponse)
-	router.HandleFunc("/test", test)
+	router.Use(middleware.WriteResponse) 
 
 	// Thresholds
 	router.Handle("/sensors/{sensor_id:[0-9]+}/thresholds/{threshold_id: [0-9]+}",
