@@ -1,6 +1,7 @@
-package controllers
+package main
 
 import (
+	"SensorProject/controllers"
 	"SensorProject/dtos"
 	"SensorProject/middleware"
 	"SensorProject/middleware/auth"
@@ -33,23 +34,23 @@ func StartServer() {
 	userService := service.NewUserService(usersRepo)
 
 	// Handlers - Threshold
-	getThresholdHandler := NewGetThresholdHandler(thresholdService)
-	postThresholdHandler := NewPostThresholdHandler(thresholdService)
+	getThresholdHandler := controllers.NewGetThresholdHandler(thresholdService)
+	postThresholdHandler := controllers.NewPostThresholdHandler(thresholdService)
 
 	// Handlers - Temperature
-	postTemperatureHandler := NewPostTemperatureHandler(tempService)
+	postTemperatureHandler := controllers.NewPostTemperatureHandler(tempService)
 
 	// Handlers - Stats
-	getReadingsHandler := NewGetReadingsHandler(tempService)
-	getStatsHandler := NewGetStatsHandler(tempService)
+	getReadingsHandler := controllers.NewGetReadingsHandler(tempService)
+	getStatsHandler := controllers.NewGetStatsHandler(tempService)
 
 	// Handlers - Sensor
-	getAllSensorsHandler := NewGetAllSensorsHandler(sensorService)
-	getSensorHandler := NewGetSensorHandler(sensorService)
-	updateSensorHandler := NewUpdateSensorHandler(sensorService)
+	getAllSensorsHandler := controllers.NewGetAllSensorsHandler(sensorService)
+	getSensorHandler := controllers.NewGetSensorHandler(sensorService)
+	updateSensorHandler := controllers.NewUpdateSensorHandler(sensorService)
 
 	// Handlers - User
-	userLoginHandler := NewUserLoginHandler(userService)
+	userLoginHandler := controllers.NewUserLoginHandler(userService)
 
 	// Router
 	router := mux.NewRouter()
