@@ -22,14 +22,14 @@ func StartServer() {
 	// Repo
 	thresholdRepo := repository.NewThresholdRepositoryDB(dbClient)
 	tempRepo := repository.NewTemperatureRepositoryDB(dbClient)
-	sensorRepo := repository.NewSensorsRepositoryDB(dbClient)
+	sensorRepo := repository.NewSensorRepositoryDB(dbClient)
 	alertRepo := repository.NewThresholdAlertRepositoryDB(dbClient)
 	usersRepo := repository.NewUsersRepositoryDB(dbClient)
 
 	// Service
 	thresholdService := service.NewThresholdService(thresholdRepo, tempRepo, alertRepo)
 	tempService := service.NewTemperatureService(tempRepo, dateUtil)
-	sensorService := service.NewSensorsService(sensorRepo)
+	sensorService := service.NewSensorService(sensorRepo)
 	userService := service.NewUserService(usersRepo)
 
 	// Handlers - Threshold
@@ -45,6 +45,8 @@ func StartServer() {
 
 	// Handlers - Sensor
 	getAllSensorsHandler := NewGetAllSensorsHandler(sensorService)
+	getSensorHandler := NewGetSensorHandler(sensorService)
+	updateSensorHandler := NewUpdateSensorHandler(sensorService)
 
 	// Handlers - User
 	userLoginHandler := NewUserLoginHandler(userService)
@@ -84,6 +86,8 @@ func StartServer() {
 
 	// Sensors
 	s.Handle("/sensors", getAllSensorsHandler).Methods(http.MethodGet)
+	s.Handle("/sensors/{sensor_id:[0-9]+}", middleware.BindRequestParams(getSensorHandler, &dtos.GetSensorDto{})).Methods(http.MethodGet)
+	s.Handle("/sensors/{sensor_id:[0-9]+}", middleware.BindRequestBody(updateSensorHandler, &dtos.UpdateSensorDto{})).Methods(http.MethodPut)
 
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
 }

@@ -7,24 +7,36 @@ import (
 	"gorm.io/gorm"
 )
 
-type SensorsRepository interface {
-	FetchSensors() ([]dtos.Sensors, *errors.AppError)
+type SensorRepository interface {
+	FetchSensors() (*[]dtos.SensorDto, *errors.AppError)
+	FetchSensorById(sensorId uint) (*dtos.SensorDto, *errors.AppError)
 }
-type sensorsRepository struct {
+
+type sensorRepository struct {
 	db *gorm.DB
 }
 
-func NewSensorsRepositoryDB(db *gorm.DB) SensorsRepository {
-	return sensorsRepository{db: db}
+func NewSensorRepositoryDB(db *gorm.DB) SensorRepository {
+	return sensorRepository{db: db}
 }
 
 // TODO: USERID
-func (s sensorsRepository) FetchSensors() ([]dtos.Sensors, *errors.AppError) {
-	var sensors []dtos.Sensors
+func (s sensorRepository) FetchSensors() (*[]dtos.SensorDto, *errors.AppError) {
+	var sensors []dtos.SensorDto
 	result := s.db.Select("sensors.id, sensors.sensor_name, thresholds.temperature").Joins("Left JOIN thresholds on sensors.id = thresholds.sensor_id").Find(&sensors)
 	if result.Error != nil {
 		return nil, errors.NewUnexpectedError("Unexpected error while processing request")
 	}
-	return sensors, nil
+	return &sensors, nil
+}
 
+// TODO: USERID
+func (s sensorRepository) FetchSensorById(sensorId uint) (*dtos.SensorDto, *errors.AppError) {
+	var sensor dtos.SensorDto
+	result := s.db.Select("sensors.id,sensors.sensor_name,thresholds.temperature")
+	result.Joins("JOIN thresholds on sensors.id = thresholds.sensor_id").First(&sensor, "sensors.id = ?", sensorId)
+	if result.Error != nil {
+		return nil, errors.NewUnexpectedError("Unexpected error while processing request")
+	}
+	return &sensor, nil
 }

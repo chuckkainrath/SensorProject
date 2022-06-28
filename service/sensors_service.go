@@ -6,21 +6,33 @@ import (
 	"SensorProject/repository"
 )
 
-type SensorsService interface {
-	GetSensorsService() ([]dtos.Sensors, *errors.AppError)
+type SensorService interface {
+	GetSensors() (*[]dtos.SensorDto, *errors.AppError)
+	GetSensorById(sensorId uint) (*dtos.SensorDto, *errors.AppError)
+	UpdateSensor()
 }
 
-type sensorsService struct {
-	SensorsRepository repository.SensorsRepository
+type sensorService struct {
+	SensorsRepository repository.SensorRepository
 }
 
-func NewSensorsService(sensorRepo repository.SensorsRepository) SensorsService {
-	return sensorsService{
+func NewSensorService(sensorRepo repository.SensorRepository) SensorService {
+	return sensorService{
 		SensorsRepository: sensorRepo,
 	}
 }
 
-// TODO: USER ID
-func (s sensorsService) GetSensorsService() ([]dtos.Sensors, *errors.AppError) {
+// TODO: add USER ID to filter results
+func (s sensorService) GetSensors() (*[]dtos.SensorDto, *errors.AppError) {
 	return s.SensorsRepository.FetchSensors()
+}
+
+// TODO: add USER ID to filter results
+func (s sensorService) GetSensorById(sensorId uint) (*dtos.SensorDto, *errors.AppError) {
+	return s.SensorsRepository.FetchSensorById(sensorId)
+}
+
+// TODO: add USER ID to filter results
+func (s sensorService) UpdateSensor() {
+
 }
