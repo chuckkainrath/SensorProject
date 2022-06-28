@@ -6,5 +6,5 @@ type AddThresholdDto struct {
 }
 
 type InputGetThresholdDto struct {
-	SensorID    uint `mapstructure:"sensor_id"`
+	SensorID uint `mapstructure:"sensor_id"`
 }

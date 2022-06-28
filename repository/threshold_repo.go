@@ -11,6 +11,7 @@ import (
 type ThresholdRepository interface {
 	GetSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
 	UpsertNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
+	DeleteSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
 	GetThresholdTemperature(sensorId uint) (*decimal.Decimal, *errors.AppError)
 }
 
@@ -40,6 +41,17 @@ func (t thresholdRepository) UpsertNewThreshold(sensorId uint) (*models.Threshol
 	var thresholds models.Threshold
 	query := t.db.Raw(thresholdSql, sensorId)
 	result := query.Find(&thresholds)
+	if result.Error != nil {
+		return nil, errors.NewNotFoundError("Threshold Not Found")
+	}
+	return &thresholds, nil
+}
+
+func (t thresholdRepository) DeleteSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
+	thresholdSql := "SELECT sensor_id, FROM sensor_id = ?"
+	var thresholds models.Threshold
+	query := t.db.Raw(thresholdSql, sensorId)
+	result := query.First(&thresholds)
 	if result.Error != nil {
 		return nil, errors.NewNotFoundError("Threshold Not Found")
 	}

@@ -36,6 +36,7 @@ func StartServer() {
 	// Handlers - Threshold
 	getThresholdHandler := controllers.NewGetThresholdHandler(thresholdService)
 	postThresholdHandler := controllers.NewPostThresholdHandler(thresholdService)
+	deleteThresholdHandler := controllers.NewDeleteThresholdHandler(thresholdService)
 
 	// Handlers - Temperature
 	postTemperatureHandler := controllers.NewPostTemperatureHandler(tempService)
@@ -72,6 +73,9 @@ func StartServer() {
 
 	s.Handle("/sensors/thresholds",
 		middleware.BindRequestBody(postThresholdHandler, &dtos.AddThresholdDto{})).Methods(http.MethodPost, http.MethodPut)
+
+	s.Handle("/sensors/{sensor_id:[0-9]+}/thresholds",
+		middleware.BindRequestBody(deleteThresholdHandler, &dtos.InputGetThresholdDto{})).Methods(http.MethodDelete)
 
 	// Stats
 	s.Handle("/sensors/{sensor_id:[0-9]+}/stats/readings",

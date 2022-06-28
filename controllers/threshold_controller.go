@@ -15,6 +15,10 @@ type postThresholdHandler struct {
 	thresholdService service.ThresholdService
 }
 
+type deleteThresholdHandler struct {
+	thresholdService service.ThresholdService
+}
+
 func NewGetThresholdHandler(thresholdService service.ThresholdService) http.Handler {
 	return &getThresholdHandler{
 		thresholdService: thresholdService,
@@ -26,6 +30,18 @@ func NewPostThresholdHandler(thresholdService service.ThresholdService) http.Han
 		thresholdService: thresholdService,
 	}
 }
+
+func NewDeleteThresholdHandler(thresholdService service.ThresholdService) http.Handler {
+	return &deleteThresholdHandler{
+		thresholdService: thresholdService,
+	}
+}
+
+// func NewPutThresholdHandler(thresholdService service.ThresholdService) http.Handler {
+// 	return &putThresholdHandler{
+// 		thresholdService: thresholdService,
+// 	}
+// }
 
 //GET /sensors/:sensorId/thresholds/:thresholdId
 func (th *getThresholdHandler) getSensorThreshold(w http.ResponseWriter, r *http.Request) {
@@ -51,10 +67,26 @@ func (th *postThresholdHandler) postSensorThreshold(w http.ResponseWriter, r *ht
 	// }
 }
 
+func (th *deleteThresholdHandler) deleteSensorThreshold(w http.ResponseWriter, r*http.Request) {
+	inputDto := **middleware.GetRequestParams(r).(**dtos.InputGetThresholdDto)
+	threshold, err := th.thresholdService.DeleteSensorThreshold(inputDto.SensorID)
+
+	if err != nil {
+		middleware.AddResultToContext(r, err, middleware.ErrorKey)
+		return
+	}
+	middleware.AddResultToContext((r, threshold, middleware.OutputDataKey))
+}
+
+
 func (th *getThresholdHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	th.getSensorThreshold(w, r)
 }
 
 func (th *postThresholdHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	th.postSensorThreshold(w, r)
+}
+
+func (th *deleteThresholdHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	th.deleteThresholdHandler(w, r)
 }
