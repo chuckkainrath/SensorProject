@@ -28,10 +28,9 @@ CREATE TABLE temperatures (
 );
 
 CREATE TABLE thresholds (
-  id SERIAL NOT NULL,
   temperature NUMERIC(8, 4) NOT NULL,
   sensor_id INT UNIQUE references sensors(id),
-  PRIMARY KEY (id)
+  PRIMARY KEY (sensor_id)
 );
 
 CREATE TABLE threshold_alerts (

@@ -9,8 +9,8 @@ import (
 var tempCount = 5
 
 type ThresholdService interface {
-	GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError)
-	PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
+	GetSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
+	UpsertNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
 
 	CheckForThresholdBreach(sensorId uint)
 }
@@ -31,8 +31,8 @@ func NewThresholdService(thresholdRepo repository.ThresholdRepository,
 	}
 }
 
-func (t thresholdService) GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError) {
-	c, err := t.ThresholdRepo.GetSensorThreshold(sensorId, thresholdId)
+func (t thresholdService) GetSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
+	c, err := t.ThresholdRepo.GetSensorThreshold(sensorId)
 	if err != nil {
 		return nil, err
 	}
@@ -42,8 +42,8 @@ func (t thresholdService) GetSensorThreshold(sensorId uint, thresholdId uint) (*
 	return c, nil
 }
 
-func (t thresholdService) PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
-	c, err := t.ThresholdRepo.PostNewThreshold(sensorId)
+func (t thresholdService) UpsertNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
+	c, err := t.ThresholdRepo.UpsertNewThreshold(sensorId)
 	if err != nil {
 		return nil, err
 	}
