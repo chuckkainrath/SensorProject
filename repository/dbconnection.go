@@ -31,7 +31,6 @@ func StartPostgresDB() {
 	})
 }
 
-
 func DB() *gorm.DB { // returns a pointer to gorm.DB
 	return db
 }

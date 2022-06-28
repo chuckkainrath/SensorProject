@@ -1,13 +1,13 @@
 package main
 
 import (
-	"SensorProject/controllers"
+	"SensorProject/app"
+	event "SensorProject/events"
 	"SensorProject/repository"
 )
 
 func main() {
-
+	event.StartAddTemperatureHandler()
 	repository.StartPostgresDB()
-	controllers.StartServer()
-
+	app.StartServer()
 }

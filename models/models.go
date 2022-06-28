@@ -1,6 +1,11 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/shopspring/decimal"
+)
 
 type User struct {
 	ID             uint
@@ -10,7 +15,7 @@ type User struct {
 
 type Temperature struct {
 	ID          uint
-	Temperature float64
+	Temperature decimal.Decimal `gorm:"type:numeric"`
 	SensorID    uint
 	CreatedAt   time.Time
 }
@@ -21,16 +26,22 @@ type Sensor struct {
 	UserId uint
 }
 
-type Treshold struct {
-	ID          uint
-	SensorID    uint
-	Temperature float64
+type Threshold struct {
+	ID          uint            `json:"id"`
+	SensorID    uint            `json:"sensor_id"`
+	Temperature decimal.Decimal `gorm:"type:numeric" json:"temperature"`
 }
 
-type TresholdAlert struct {
+type ThresholdAlert struct {
 	ID          uint
-	SensorID    string
-	Temperature float64
-	Treshold    float64
+	SensorID    uint
+	Temperature decimal.Decimal `gorm:"type:numeric"`
+	Threshold   decimal.Decimal `gorm:"type:numeric"`
 	CreatedAt   time.Time
+}
+
+type Token struct {
+	UserID   uint
+	Username string
+	jwt.StandardClaims
 }
