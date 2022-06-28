@@ -9,8 +9,8 @@ import (
 )
 
 type ThresholdRepository interface {
-	GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError)
-	PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
+	GetSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
+	UpsertNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
 	GetThresholdTemperature(sensorId uint) (*decimal.Decimal, *errors.AppError)
 }
 
@@ -24,10 +24,10 @@ func NewThresholdRepositoryDB(db *gorm.DB) ThresholdRepository {
 	}
 }
 
-func (t thresholdRepository) GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError) {
-	thresholdSql := "SELECT id, temperature, sensor_id FROM thresholds WHERE id = ? AND sensor_id = ?"
+func (t thresholdRepository) GetSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
+	thresholdSql := "SELECT id, temperature, sensor_id FROM sensor_id = ?"
 	var thresholds models.Threshold
-	query := t.db.Raw(thresholdSql, thresholdId, sensorId)
+	query := t.db.Raw(thresholdSql, sensorId)
 	result := query.First(&thresholds)
 	if result.Error != nil {
 		return nil, errors.NewNotFoundError("Threshold Not Found")
@@ -35,8 +35,8 @@ func (t thresholdRepository) GetSensorThreshold(sensorId uint, thresholdId uint)
 	return &thresholds, nil
 }
 
-func (t thresholdRepository) PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
-	thresholdSql := "INSERT INTO thresholds (id, temperature, sensor_id) VALUES (?,?,?)"
+func (t thresholdRepository) UpsertNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
+	thresholdSql := "UPSERT INTO thresholds (temperature, sensor_id) VALUES (?,?)"
 	var thresholds models.Threshold
 	query := t.db.Raw(thresholdSql, sensorId)
 	result := query.Find(&thresholds)

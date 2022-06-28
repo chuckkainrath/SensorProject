@@ -67,11 +67,11 @@ func StartServer() {
 	s.Use(auth.JwtVerify)
 
 	// Thresholds
-	s.Handle("/sensors/{sensor_id:[0-9]+}/thresholds/{threshold_id:[0-9]+}",
+	s.Handle("/sensors/{sensor_id:[0-9]+}/thresholds",
 		middleware.BindRequestParams(getThresholdHandler, &dtos.InputGetThresholdDto{})).Methods(http.MethodGet)
 
 	s.Handle("/sensors/thresholds",
-		middleware.BindRequestBody(postThresholdHandler, &dtos.AddThresholdDto{})).Methods(http.MethodPost)
+		middleware.BindRequestBody(postThresholdHandler, &dtos.AddThresholdDto{})).Methods(http.MethodPost, http.MethodPut)
 
 	// Stats
 	s.Handle("/sensors/{sensor_id:[0-9]+}/stats/readings",
