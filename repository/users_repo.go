@@ -20,10 +20,10 @@ func NewUsersRepositoryDB(db *gorm.DB) userRepository {
 }
 
 func (u userRepository) GetUser(username string) (*models.User, *errors.AppError) {
-	var user *models.User
-	result := DB().Where("user_name = ?", username).First(user)
+	var user models.User
+	result := u.db.Model(&models.User{}).Where("users.user_name = ?", username).First(&user)
 	if result.Error != nil {
 		return nil, errors.NewNotFoundError("User not found")
 	}
-	return user, nil
+	return &user, nil
 }

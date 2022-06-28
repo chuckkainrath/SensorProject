@@ -51,3 +51,10 @@ func NewUnauthorizedError(message string) *AppError {
 		Message: message,
 	}
 }
+
+func NewForbiddenError(message string) *AppError {
+	return &AppError{
+		Code:    http.StatusForbidden,
+		Message: message,
+	}
+}

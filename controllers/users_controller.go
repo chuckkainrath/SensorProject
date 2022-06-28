@@ -20,11 +20,11 @@ func (u *userLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *userLoginHandler) Login(w http.ResponseWriter, r *http.Request) {
-	user := **middleware.GetRequestBody(r).(**dtos.UserDto)
+	user := *middleware.GetRequestBody(r).(*dtos.UserDto)
 
 	token, err := u.UserService.GetUserToken(user.UserName, user.Password)
 	if err != nil {
-		middleware.AddResultToContext(r, *err, middleware.ErrorKey)
+		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
 	}
 	middleware.AddResultToContext(r, token, middleware.OutputDataKey)

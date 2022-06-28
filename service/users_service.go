@@ -45,7 +45,7 @@ func (u userService) GetUserToken(username, password string) (*string, *errors.A
 
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
 
-	tokenString, tknErr := token.SignedString([]byte("secret"))
+	tokenString, tknErr := token.SignedString([]byte("randomsecretstring"))
 	if tknErr != nil {
 		return nil, errors.NewUnexpectedError("Unexpected error while processing request")
 	}

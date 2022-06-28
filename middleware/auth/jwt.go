@@ -1,49 +1,53 @@
 package auth
 
 import (
+	"SensorProject/middleware"
+	"SensorProject/middleware/errors"
 	"SensorProject/models"
 	"context"
-	"encoding/json"
 	"net/http"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
-// Exception struct declaration
-type Exception struct {
-	Message string `json:"message"`
-}
-
-// Checks if token is passed in the request headers
-// Validates and decodes the token
-
 func JwtVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		var header = r.Header.Get("x-access-token") // Grab the token from the header
+		var header = r.Header.Get("Authorization") // Grab the token from the header
 
 		header = strings.TrimSpace(header)
 
 		if header == "" {
-			// Token is missing, returns with error code 403 Unauthorized
-			w.WriteHeader(http.StatusForbidden)
-			json.NewEncoder(w).Encode(Exception{Message: "Missing auth token"})
+			err := errors.NewForbiddenError("Missing auth token")
+			middleware.AddResultToContext(r, err, middleware.ErrorKey)
+			return
+		}
+		tknParts := strings.Fields(header)
+		if len(tknParts) != 2 || tknParts[0] != "Bearer" {
+			err := errors.NewForbiddenError("Invalid token")
+			middleware.AddResultToContext(r, err, middleware.ErrorKey)
 			return
 		}
 		tk := &models.Token{}
 
-		_, err := jwt.ParseWithClaims(header, tk, func(token *jwt.Token) (interface{}, error) {
-			return []byte("secret"), nil
+		_, err := jwt.ParseWithClaims(tknParts[1], tk, func(token *jwt.Token) (interface{}, error) {
+			return []byte("randomsecretstring"), nil
 		})
 
 		if err != nil {
-			w.WriteHeader(http.StatusForbidden)
-			json.NewEncoder(w).Encode(Exception{Message: err.Error()})
+			err := errors.NewForbiddenError("Invalid token")
+			middleware.AddResultToContext(r, err, middleware.ErrorKey)
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "user", tk)
-		next.ServeHTTP(w, r.WithContext(ctx))
+		ctx := r.Context()
+		req := r.WithContext(context.WithValue(ctx, middleware.TokenKey, tk))
+		*r = *req
+		next.ServeHTTP(w, r)
 	})
+}
+
+func GetTokenData(r *http.Request) interface{} {
+	return r.Context().Value(middleware.TokenKey)
 }

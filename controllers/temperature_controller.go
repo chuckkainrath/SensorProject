@@ -28,7 +28,7 @@ func (p *postTemperatureHandler) postTemperature(w http.ResponseWriter, r *http.
 
 	err := p.TemperatureService.AddTemperature(tempDto.SensorID, tempDto.Temperature)
 	if err != nil {
-		middleware.AddResultToContext(r, *err, middleware.ErrorKey)
+		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
 	}
 	//t.tempAddChan <- temp.SensorID

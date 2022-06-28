@@ -40,7 +40,7 @@ func (g *getReadings) GetPerMinuteReadings(w http.ResponseWriter, r *http.Reques
 
 	res, err := g.TemperatureService.GetPerMinuteReading(statsDto.SensorID, statsDto.From, statsDto.To)
 	if err != nil {
-		middleware.AddResultToContext(r, *err, middleware.ErrorKey)
+		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
 	}
 	middleware.AddResultToContext(r, res, middleware.OutputDataKey)
@@ -51,7 +51,7 @@ func (g *getStats) GetMinMaxAverageStats(w http.ResponseWriter, r *http.Request)
 
 	res, err := g.TemperatureService.GetMinMaxAverageStats(statsDto.SensorID, statsDto.From, statsDto.To)
 	if err != nil {
-		middleware.AddResultToContext(r, *err, middleware.ErrorKey)
+		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
 	}
 	middleware.AddResultToContext(r, res, middleware.OutputDataKey)

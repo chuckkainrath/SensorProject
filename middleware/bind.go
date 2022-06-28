@@ -14,7 +14,8 @@ import (
 func BindRequestBody(next http.Handler, jsonStruct interface{}) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		jsonStruct := reflect.New(reflect.TypeOf(jsonStruct))
-		err := json.NewDecoder(r.Body).Decode(jsonStruct.Interface())
+		jsonAny := jsonStruct.Interface()
+		err := json.NewDecoder(r.Body).Decode(jsonAny)
 		defer r.Body.Close()
 
 		ctx := r.Context()
@@ -24,7 +25,7 @@ func BindRequestBody(next http.Handler, jsonStruct interface{}) http.Handler {
 			writeResponse(w, appErr.Code, nil, &appErr.Message)
 			return
 		} else {
-			req = r.WithContext(context.WithValue(ctx, InputBodyKey, jsonStruct))
+			req = r.WithContext(context.WithValue(ctx, InputBodyKey, jsonAny))
 		}
 		*r = *req
 

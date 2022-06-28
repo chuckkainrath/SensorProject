@@ -18,8 +18,9 @@ func WriteResponse(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 
 		ctx := r.Context()
-		err := ctx.Value(ErrorKey).(*errors.AppError)
-		if err != nil {
+		errVal := ctx.Value(ErrorKey)
+		if errVal != nil {
+			err := errVal.(*errors.AppError)
 			writeResponse(w, err.Code, nil, &err.Message)
 			return
 		}

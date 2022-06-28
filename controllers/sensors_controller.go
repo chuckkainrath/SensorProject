@@ -20,11 +20,13 @@ func (g *getAllSensorsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	g.GetSensors(w, r)
 }
 
-// TODO: USER ID
 func (g *getAllSensorsHandler) GetSensors(w http.ResponseWriter, r *http.Request) {
+	// TODO: use tkn.UserName to get all sensors for the specified user
+	// tkn := *auth.GetTokenData(r).(*models.Token)
+
 	sensors, err := g.SensorsService.GetSensorsService()
 	if err != nil {
-		middleware.AddResultToContext(r, *err, middleware.ErrorKey)
+		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
 	}
 	middleware.AddResultToContext(r, sensors, middleware.OutputDataKey)

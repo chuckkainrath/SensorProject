@@ -34,7 +34,7 @@ func (th *getThresholdHandler) getSensorThreshold(w http.ResponseWriter, r *http
 	customers, err := th.thresholdService.GetSensorThreshold(inputDto.SensorID, inputDto.ThresholdID)
 
 	if err != nil {
-		middleware.AddResultToContext(r, *err, middleware.ErrorKey)
+		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
 	}
 	middleware.AddResultToContext(r, customers, middleware.OutputDataKey)
