@@ -57,21 +57,21 @@ func StartServer() {
 	router.Use(middleware.WriteResponse)
 
 	// User
-	router.Handle("/login", middleware.BindRequestBody(userLoginHandler, dtos.UserDto{})).Methods(http.MethodPost)
+	router.Handle("/login", middleware.BindRequestBody(userLoginHandler, &dtos.UserDto{})).Methods(http.MethodPost)
 
 	// Temperature
-	router.Handle("/sensors/temperatures", middleware.BindRequestBody(postTemperatureHandler, dtos.AddTemperatureDto{})).Methods(http.MethodPost)
+	router.Handle("/sensors/temperatures", middleware.BindRequestBody(postTemperatureHandler, &dtos.AddTemperatureDto{})).Methods(http.MethodPost)
 
 	// Auth subrouter
 	s := router.PathPrefix("/").Subrouter()
 	s.Use(auth.JwtVerify)
 
 	// Thresholds
-	s.Handle("/sensors/{sensor_id:[0-9]+}/thresholds/{threshold_id: [0-9]+}",
+	s.Handle("/sensors/{sensor_id:[0-9]+}/thresholds/{threshold_id:[0-9]+}",
 		middleware.BindRequestParams(getThresholdHandler, &dtos.InputGetThresholdDto{})).Methods(http.MethodGet)
 
-	s.Handle("/sensors/{sensor_id:[0-9]+}/thresholds",
-		middleware.BindRequestBody(postThresholdHandler, dtos.AddThresholdDto{})).Methods(http.MethodPost)
+	s.Handle("/sensors/thresholds",
+		middleware.BindRequestBody(postThresholdHandler, &dtos.AddThresholdDto{})).Methods(http.MethodPost)
 
 	// Stats
 	s.Handle("/sensors/{sensor_id:[0-9]+}/stats/readings",
@@ -87,8 +87,8 @@ func StartServer() {
 
 	// Sensors
 	s.Handle("/sensors", getAllSensorsHandler).Methods(http.MethodGet)
-	s.Handle("/sensors/{sensor_id:[0-9]+}", middleware.BindRequestParams(getSensorHandler, &dtos.GetSensorDto{})).Methods(http.MethodGet)
-	s.Handle("/sensors/{sensor_id:[0-9]+}", middleware.BindRequestBody(updateSensorHandler, &dtos.UpdateSensorDto{})).Methods(http.MethodPut)
+	s.Handle("/sensors/{sensor_id:[0-9]+}", middleware.BindRequestParams(getSensorHandler, &dtos.SensorIdDto{})).Methods(http.MethodGet)
+	s.Handle("/sensors", middleware.BindRequestBody(updateSensorHandler, &dtos.UpdateSensorDto{})).Methods(http.MethodPut)
 
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
 }

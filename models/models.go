@@ -27,9 +27,9 @@ type Sensor struct {
 }
 
 type Threshold struct {
-	ID          uint
-	SensorID    uint
-	Temperature decimal.Decimal `gorm:"type:numeric"`
+	ID          uint            `json:"id"`
+	SensorID    uint            `json:"sensor_id"`
+	Temperature decimal.Decimal `gorm:"type:numeric" json:"temperature"`
 }
 
 type ThresholdAlert struct {

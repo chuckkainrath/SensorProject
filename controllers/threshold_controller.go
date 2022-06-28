@@ -30,20 +30,19 @@ func NewPostThresholdHandler(thresholdService service.ThresholdService) http.Han
 //GET /sensors/:sensorId/thresholds/:thresholdId
 func (th *getThresholdHandler) getSensorThreshold(w http.ResponseWriter, r *http.Request) {
 	inputDto := **middleware.GetRequestParams(r).(**dtos.InputGetThresholdDto)
-
-	customers, err := th.thresholdService.GetSensorThreshold(inputDto.SensorID, inputDto.ThresholdID)
+	threshold, err := th.thresholdService.GetSensorThreshold(inputDto.SensorID, inputDto.ThresholdID)
 
 	if err != nil {
 		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
 	}
-	middleware.AddResultToContext(r, customers, middleware.OutputDataKey)
+	middleware.AddResultToContext(r, threshold, middleware.OutputDataKey)
 }
 
 //POST /sensors/:sensorId/thresholds   //Include to check to see if a threshold already exists, if it does POST request isn't allowed, and a PUT request should be recommended
 func (th *postThresholdHandler) postSensorThreshold(w http.ResponseWriter, r *http.Request) {
-	// vars := mux.Vars(r)
-	// id, _ := strconv.Atoi(vars["sensor_id"])
+	//addThresholdDto := *middleware.GetRequestBody(r).(*dtos.AddThresholdDto)
+
 	// customer, err := th.service.PostNewThreshold(id)
 	// if err != nil {
 	// 	writeResponse(w, err.Code, err.AsMessage())

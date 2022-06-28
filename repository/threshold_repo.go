@@ -27,8 +27,8 @@ func NewThresholdRepositoryDB(db *gorm.DB) ThresholdRepository {
 func (t thresholdRepository) GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError) {
 	thresholdSql := "SELECT id, temperature, sensor_id FROM thresholds WHERE id = ? AND sensor_id = ?"
 	var thresholds models.Threshold
-	row := t.db.Raw(thresholdSql, thresholdId, sensorId)
-	result := row.Scan(&thresholds)
+	query := t.db.Raw(thresholdSql, thresholdId, sensorId)
+	result := query.First(&thresholds)
 	if result.Error != nil {
 		return nil, errors.NewNotFoundError("Threshold Not Found")
 	}
@@ -38,8 +38,8 @@ func (t thresholdRepository) GetSensorThreshold(sensorId uint, thresholdId uint)
 func (t thresholdRepository) PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
 	thresholdSql := "INSERT INTO thresholds (id, temperature, sensor_id) VALUES (?,?,?)"
 	var thresholds models.Threshold
-	row := t.db.Raw(thresholdSql, sensorId)
-	result := row.Scan(&thresholds)
+	query := t.db.Raw(thresholdSql, sensorId)
+	result := query.Find(&thresholds)
 	if result.Error != nil {
 		return nil, errors.NewNotFoundError("Threshold Not Found")
 	}
