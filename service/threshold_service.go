@@ -4,13 +4,15 @@ import (
 	"SensorProject/middleware/errors"
 	"SensorProject/models"
 	"SensorProject/repository"
+
+	"github.com/shopspring/decimal"
 )
 
 var tempCount = 5
 
 type ThresholdService interface {
 	GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError)
-	PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
+	PostNewThreshold(sensorId uint, temperature decimal.Decimal) *errors.AppError
 
 	CheckForThresholdBreach(sensorId uint)
 }
@@ -42,12 +44,18 @@ func (t thresholdService) GetSensorThreshold(sensorId uint, thresholdId uint) (*
 	return c, nil
 }
 
-func (t thresholdService) PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
-	c, err := t.ThresholdRepo.PostNewThreshold(sensorId)
-	if err != nil {
-		return nil, err
+func (t thresholdService) PostNewThreshold(sensorId uint, temperature decimal.Decimal) *errors.AppError {
+	//TODO:DUSTIN ???? GORM can really fill in missing ID context?
+	thresh := models.Threshold{
+		SensorID:    sensorId,
+		Temperature: temperature,
 	}
-	return c, nil
+	return t.ThresholdRepo.PostNewThresholdToDb(thresh)
+	// c, err := t.ThresholdRepo.PostNewThreshold(sensorId)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return c, nil
 }
 
 func (t thresholdService) CheckForThresholdBreach(sensorId uint) {

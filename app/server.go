@@ -4,7 +4,6 @@ import (
 	"SensorProject/controllers"
 	"SensorProject/dtos"
 	"SensorProject/middleware"
-	"SensorProject/middleware/auth"
 	"SensorProject/repository"
 	"SensorProject/service"
 	"SensorProject/util"
@@ -62,9 +61,9 @@ func StartServer() {
 	// Temperature
 	router.Handle("/sensors/temperatures", middleware.BindRequestBody(postTemperatureHandler, &dtos.AddTemperatureDto{})).Methods(http.MethodPost)
 
-	// Auth subrouter
+	// Auth subrouterå
 	s := router.PathPrefix("/").Subrouter()
-	s.Use(auth.JwtVerify)
+	//s.Use(auth.JwtVerify)
 
 	// Thresholds
 	s.Handle("/sensors/{sensor_id:[0-9]+}/thresholds/{threshold_id:[0-9]+}",

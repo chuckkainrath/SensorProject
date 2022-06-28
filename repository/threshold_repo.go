@@ -10,7 +10,7 @@ import (
 
 type ThresholdRepository interface {
 	GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError)
-	PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
+	PostNewThresholdToDb(thresh models.Threshold) *errors.AppError
 	GetThresholdTemperature(sensorId uint) (*decimal.Decimal, *errors.AppError)
 }
 
@@ -35,15 +35,29 @@ func (t thresholdRepository) GetSensorThreshold(sensorId uint, thresholdId uint)
 	return &thresholds, nil
 }
 
-func (t thresholdRepository) PostNewThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
-	thresholdSql := "INSERT INTO thresholds (id, temperature, sensor_id) VALUES (?,?,?)"
-	var thresholds models.Threshold
-	query := t.db.Raw(thresholdSql, sensorId)
-	result := query.Find(&thresholds)
+// func (t temperatureRepository) AddTemperatureToDb(temp *models.Temperature) *errors.AppError {
+// 	result := DB().Create(temp)
+// 	if result.Error != nil {
+// 		return errors.NewUnexpectedError("Unexpected error while processing request")
+// 	}
+// 	return nil
+// }
+
+func (t thresholdRepository) PostNewThresholdToDb(thresh models.Threshold) *errors.AppError {
+	//do i insert id for this if GORM autofills? TODO:DUSTIN
+	result := DB().Create(thresh)
 	if result.Error != nil {
-		return nil, errors.NewNotFoundError("Threshold Not Found")
+		return errors.NewUnexpectedError("Unexpected error while processing request")
 	}
-	return &thresholds, nil
+	return nil
+	// thresholdSql := "INSERT INTO thresholds (id, temperature, sensor_id) VALUES (?,?,?)"
+	// var thresholds models.Threshold
+	// query := t.db.Raw(thresholdSql, sensorId)
+	// result := query.Find(&thresholds)
+	// if result.Error != nil {
+	// 	return nil, errors.NewNotFoundError("Threshold Not Found")
+	// }
+	// return &thresholds, nil
 }
 
 func (t thresholdRepository) GetThresholdTemperature(sensorId uint) (*decimal.Decimal, *errors.AppError) {
