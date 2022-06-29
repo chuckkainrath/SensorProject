@@ -69,16 +69,16 @@ func respondToAddTemperature(tempChan <-chan dtos.AddTemperatureDto) {
 
 		sensorData, ok := sensorMap[sensorTemp.SensorID]
 		if !ok {
-			sensorData, err := alertService.GetLatestTempsAndThreshold(sensorTemp.SensorID, tempCount)
+			sensorDataRes, err := alertService.GetLatestTempsAndThreshold(sensorTemp.SensorID, tempCount)
 			if err != nil {
 				return
 			}
-			sensorMap[sensorTemp.SensorID] = *sensorData
+			sensorMap[sensorTemp.SensorID] = *sensorDataRes
+			sensorData = *sensorDataRes
 		} else {
-			sensorData.Temps = append(sensorData.Temps[1:], sensorTemp.Temperature)
+			sensorData.Temps = append([]decimal.Decimal{sensorTemp.Temperature}, sensorData.Temps[0:(tempCount-1)]...)
 		}
-
-		if ok := exceedsThreshold(sensorData.Threshold, sensorData.Temps); !ok {
+		if exceeded := exceedsThreshold(sensorData.Threshold, sensorData.Temps); exceeded {
 			alertService.AddThresholdAlert(sensorTemp.SensorID, *sensorData.Threshold, sensorTemp.Temperature)
 		}
 	}
