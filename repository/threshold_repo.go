@@ -47,9 +47,9 @@ func (t thresholdRepository) GetSensorThreshold(sensorId uint) (*models.Threshol
 // 	//do i insert id for this if GORM autofills? TODO:DUSTIN
 // 	result := DB().Create(&thresh)
 func (t thresholdRepository) UpsertNewThresholdToDb(thresh *models.Threshold) *errors.AppError {
-	thresholdSql := "UPSERT INTO thresholds (temperature, sensor_id) VALUES (?,?)"
+	thresholdSql := "INSERT INTO thresholds (sensor_id, temperature) VALUES (?,?) on conflict(sensor_id) do update set temperature=EXCLUDED.temperature"
 	var thresholds models.Threshold
-	query := t.db.Raw(thresholdSql, thresh.Temperature, thresh.SensorID)
+	query := t.db.Raw(thresholdSql, thresh.SensorID, thresh.Temperature)
 	result := query.Find(&thresholds)
 	if result.Error != nil {
 		return errors.NewUnexpectedError("Unexpected error while processing request")
