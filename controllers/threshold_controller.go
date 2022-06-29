@@ -17,7 +17,8 @@ type postThresholdHandler struct {
 }
 
 type deleteThresholdHandler struct {
-	thresholdService service.ThresholdService
+	thresholdService    service.ThresholdService
+	updateThresholdChan chan<- dtos.ThresholdEventDto
 }
 
 func NewGetThresholdHandler(thresholdService service.ThresholdService) http.Handler {
@@ -34,9 +35,11 @@ func NewPostThresholdHandler(thresholdService service.ThresholdService,
 	}
 }
 
-func NewDeleteThresholdHandler(thresholdService service.ThresholdService) http.Handler {
+func NewDeleteThresholdHandler(thresholdService service.ThresholdService,
+	updateThresholdChan chan<- dtos.ThresholdEventDto) http.Handler {
 	return &deleteThresholdHandler{
-		thresholdService: thresholdService,
+		thresholdService:    thresholdService,
+		updateThresholdChan: updateThresholdChan,
 	}
 }
 
@@ -81,6 +84,11 @@ func (th *deleteThresholdHandler) deleteSensorThreshold(w http.ResponseWriter, r
 	if err != nil {
 		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
+	}
+
+	th.updateThresholdChan <- dtos.ThresholdEventDto{
+		SensorID:    inputDto.SensorID,
+		Temperature: nil,
 	}
 }
 
