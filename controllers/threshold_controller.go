@@ -67,17 +67,15 @@ func (th *postThresholdHandler) postSensorThreshold(w http.ResponseWriter, r *ht
 	// }
 }
 
-func (th *deleteThresholdHandler) deleteSensorThreshold(w http.ResponseWriter, r*http.Request) {
+func (th *deleteThresholdHandler) deleteSensorThreshold(w http.ResponseWriter, r *http.Request) {
 	inputDto := **middleware.GetRequestParams(r).(**dtos.InputGetThresholdDto)
-	threshold, err := th.thresholdService.DeleteSensorThreshold(inputDto.SensorID)
+	err := th.thresholdService.DeleteSensorThreshold(inputDto.SensorID)
 
 	if err != nil {
 		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
 	}
-	middleware.AddResultToContext((r, threshold, middleware.OutputDataKey))
 }
-
 
 func (th *getThresholdHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	th.getSensorThreshold(w, r)
@@ -88,5 +86,5 @@ func (th *postThresholdHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 }
 
 func (th *deleteThresholdHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	th.deleteThresholdHandler(w, r)
+	th.deleteSensorThreshold(w, r)
 }
