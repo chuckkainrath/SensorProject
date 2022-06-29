@@ -10,7 +10,7 @@ import (
 )
 
 // TODO: implement the service in its entirety
-// TODO: figure out expetcedData
+// TODO: figure out expectedData
 
 type mockTempRepo struct {
 	err error
