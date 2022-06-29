@@ -12,7 +12,8 @@ type getThresholdHandler struct {
 }
 
 type postThresholdHandler struct {
-	thresholdService service.ThresholdService
+	thresholdService    service.ThresholdService
+	updateThresholdChan chan<- dtos.ThresholdEventDto
 }
 
 func NewGetThresholdHandler(thresholdService service.ThresholdService) http.Handler {
@@ -21,9 +22,11 @@ func NewGetThresholdHandler(thresholdService service.ThresholdService) http.Hand
 	}
 }
 
-func NewPostThresholdHandler(thresholdService service.ThresholdService) http.Handler {
+func NewPostThresholdHandler(thresholdService service.ThresholdService,
+	updateThresholdChan chan<- dtos.ThresholdEventDto) http.Handler {
 	return &postThresholdHandler{
-		thresholdService: thresholdService,
+		thresholdService:    thresholdService,
+		updateThresholdChan: updateThresholdChan,
 	}
 }
 

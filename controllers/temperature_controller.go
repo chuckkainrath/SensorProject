@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"SensorProject/dtos"
-	event "SensorProject/events"
 	"SensorProject/middleware"
 	"SensorProject/service"
 	"net/http"
@@ -13,10 +12,10 @@ type postTemperatureHandler struct {
 	tempAddChan        chan<- dtos.AddTemperatureDto
 }
 
-func NewPostTemperatureHandler(tempService service.TemperatureService) http.Handler {
+func NewPostTemperatureHandler(tempService service.TemperatureService, tempAddChan chan<- dtos.AddTemperatureDto) http.Handler {
 	return &postTemperatureHandler{
 		TemperatureService: tempService,
-		tempAddChan:        event.GetAddTemperatureChannel(),
+		tempAddChan:        tempAddChan,
 	}
 }
 

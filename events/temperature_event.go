@@ -134,7 +134,8 @@ func respondToUpdateThreshold(updateThresholdChan <-chan dtos.ThresholdEventDto)
 	for {
 		newThreshold := <-updateThresholdChan
 
-		sensorData := sensorMap[newThreshold.SensorID]
-		sensorData.Threshold = newThreshold.Temperature
+		if sensorData, ok := sensorMap[newThreshold.SensorID]; ok {
+			sensorData.Threshold = newThreshold.Temperature
+		}
 	}
 }
