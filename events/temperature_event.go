@@ -5,6 +5,7 @@ import (
 	"SensorProject/models"
 	"SensorProject/repository"
 	"SensorProject/service"
+	"fmt"
 	"sync"
 
 	"github.com/shopspring/decimal"
@@ -15,7 +16,7 @@ var (
 	addTempBufferChan         chan dtos.AddTemperatureDto
 	updateThresholdBufferChan chan dtos.ThresholdEventDto
 	once                      sync.Once
-	sensorMap                 = make(map[uint]models.SensorThreshold)
+	sensorMap                 = make(map[uint]*models.SensorThreshold)
 	tempCount                 = 5
 )
 
@@ -107,11 +108,12 @@ func respondToAddTemperature(tempChan <-chan dtos.AddTemperatureDto) {
 			if err != nil {
 				return
 			}
-			sensorMap[sensorTemp.SensorID] = *sensorDataRes
-			sensorData = *sensorDataRes
+			sensorMap[sensorTemp.SensorID] = sensorDataRes
+			sensorData = sensorDataRes
 		} else {
 			sensorData.Temps = append([]decimal.Decimal{sensorTemp.Temperature}, sensorData.Temps[0:(tempCount-1)]...)
 		}
+		fmt.Printf("New Sensor Data: %v\n", sensorData)
 		if exceeded := exceedsThreshold(sensorData.Threshold, sensorData.Temps); exceeded {
 			alertService.AddThresholdAlert(sensorTemp.SensorID, *sensorData.Threshold, sensorTemp.Temperature)
 		}
@@ -133,7 +135,7 @@ func exceedsThreshold(threshold *decimal.Decimal, temps []decimal.Decimal) bool 
 func respondToUpdateThreshold(updateThresholdChan <-chan dtos.ThresholdEventDto) {
 	for {
 		newThreshold := <-updateThresholdChan
-
+		fmt.Printf("Threshold updated: %v\n", newThreshold)
 		if sensorData, ok := sensorMap[newThreshold.SensorID]; ok {
 			sensorData.Threshold = newThreshold.Temperature
 		}
