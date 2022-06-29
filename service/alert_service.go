@@ -11,6 +11,7 @@ import (
 type AlertService interface {
 	AddThresholdAlert(sensorId uint, threshold, temperature decimal.Decimal)
 	GetLatestTempsAndThreshold(sensorId uint, tempCount int) (*models.SensorThreshold, *errors.AppError)
+	GetThresholdTemperature(sensorId uint) (*decimal.Decimal, *errors.AppError)
 }
 
 type alertService struct {
@@ -49,4 +50,8 @@ func (a alertService) GetLatestTempsAndThreshold(sensorId uint, tempCount int) (
 	sensorThreshold.Threshold = threshold
 
 	return &sensorThreshold, nil
+}
+
+func (a alertService) GetThresholdTemperature(sensorId uint) (*decimal.Decimal, *errors.AppError) {
+	return a.ThresholdRepo.GetThresholdTemperature(sensorId)
 }

@@ -29,7 +29,7 @@ func NewPostThresholdHandler(thresholdService service.ThresholdService) http.Han
 
 //GET /sensors/:sensorId/thresholds/:thresholdId
 func (th *getThresholdHandler) getSensorThreshold(w http.ResponseWriter, r *http.Request) {
-	inputDto := *middleware.GetRequestParams(r).(*dtos.InputGetThresholdDto)
+	inputDto := **middleware.GetRequestParams(r).(**dtos.InputGetThresholdDto)
 	threshold, err := th.thresholdService.GetSensorThreshold(inputDto.SensorID)
 
 	if err != nil {

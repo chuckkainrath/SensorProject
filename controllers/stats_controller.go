@@ -36,7 +36,7 @@ func (g *getStats) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (g *getReadings) GetPerMinuteReadings(w http.ResponseWriter, r *http.Request) {
-	statsDto := *middleware.GetRequestParams(r).(*dtos.InputStatsDto)
+	statsDto := **middleware.GetRequestParams(r).(**dtos.InputStatsDto)
 
 	res, err := g.TemperatureService.GetPerMinuteReading(statsDto.SensorID, statsDto.From, statsDto.To)
 	if err != nil {
@@ -47,7 +47,7 @@ func (g *getReadings) GetPerMinuteReadings(w http.ResponseWriter, r *http.Reques
 }
 
 func (g *getStats) GetMinMaxAverageStats(w http.ResponseWriter, r *http.Request) {
-	statsDto := *middleware.GetRequestParams(r).(*dtos.InputStatsDto)
+	statsDto := **middleware.GetRequestParams(r).(**dtos.InputStatsDto)
 
 	res, err := g.TemperatureService.GetMinMaxAverageStats(statsDto.SensorID, statsDto.From, statsDto.To)
 	if err != nil {

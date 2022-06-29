@@ -25,7 +25,7 @@ func (p *postTemperatureHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 }
 
 func (p *postTemperatureHandler) postTemperature(w http.ResponseWriter, r *http.Request) {
-	tempDto := *middleware.GetRequestBody(r).(*dtos.AddTemperatureDto)
+	tempDto := **middleware.GetRequestBody(r).(**dtos.AddTemperatureDto)
 
 	err := p.TemperatureService.AddTemperature(tempDto.SensorID, tempDto.Temperature)
 	if err != nil {

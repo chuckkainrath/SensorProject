@@ -11,23 +11,29 @@ import (
 )
 
 var (
-	poolSize          = 10
-	addTempBufferChan chan dtos.AddTemperatureDto
-	once              sync.Once
-	sensorMap         = make(map[uint]models.SensorThreshold)
-	tempCount         = 5
+	poolSize                  = 10
+	addTempBufferChan         chan dtos.AddTemperatureDto
+	updateThresholdBufferChan chan dtos.ThresholdEventDto
+	once                      sync.Once
+	sensorMap                 = make(map[uint]models.SensorThreshold)
+	tempCount                 = 5
 )
 
 func StartAddTemperatureHandler() {
 	once.Do(func() {
 		addTempBufferChan = make(chan dtos.AddTemperatureDto)
-
+		updateThresholdBufferChan = make(chan dtos.ThresholdEventDto)
 		go listenToAddTemperature()
+		go listenToThresholdUpdate()
 	})
 }
 
 func GetAddTemperatureChannel() chan<- dtos.AddTemperatureDto {
 	return addTempBufferChan
+}
+
+func GetUpdateThresholdChannel() chan<- dtos.ThresholdEventDto {
+	return updateThresholdBufferChan
 }
 
 func listenToAddTemperature() {
@@ -38,20 +44,48 @@ func listenToAddTemperature() {
 		go respondToAddTemperature(addTempChan)
 	}
 
-	var output chan dtos.AddTemperatureDto
-	var sensorId dtos.AddTemperatureDto
+	var tempOutput chan dtos.AddTemperatureDto
+	var tempSensorDto dtos.AddTemperatureDto
+
 	for {
 		if len(sensorTemps) > 0 {
-			output = addTempChan
-			sensorId = sensorTemps[0]
+			tempOutput = addTempChan
+			tempSensorDto = sensorTemps[0]
 		}
 		select {
-		case sensor_id := <-addTempBufferChan:
-			sensorTemps = append(sensorTemps, sensor_id)
-		case output <- sensorId:
+		case tempDto := <-addTempBufferChan:
+			sensorTemps = append(sensorTemps, tempDto)
+		case tempOutput <- tempSensorDto:
 			sensorTemps = sensorTemps[1:]
 			if len(sensorTemps) == 0 {
-				output = nil
+				tempOutput = nil
+			}
+		}
+	}
+}
+
+func listenToThresholdUpdate() {
+	updateThresholdChan := make(chan dtos.ThresholdEventDto)
+	thresholds := make([]dtos.ThresholdEventDto, 0)
+
+	for i := 0; i < poolSize; i++ {
+		go respondToUpdateThreshold(updateThresholdChan)
+	}
+
+	var thresholdOutput chan dtos.ThresholdEventDto
+	var thresholdSensorDto dtos.ThresholdEventDto
+	for {
+		if len(thresholds) > 0 {
+			thresholdOutput = updateThresholdChan
+			thresholdSensorDto = thresholds[0]
+		}
+		select {
+		case thresholdDto := <-updateThresholdBufferChan:
+			thresholds = append(thresholds, thresholdDto)
+		case thresholdOutput <- thresholdSensorDto:
+			thresholds = thresholds[1:]
+			if len(thresholds) == 0 {
+				thresholdOutput = nil
 			}
 		}
 	}
@@ -94,4 +128,13 @@ func exceedsThreshold(threshold *decimal.Decimal, temps []decimal.Decimal) bool 
 		}
 	}
 	return true
+}
+
+func respondToUpdateThreshold(updateThresholdChan <-chan dtos.ThresholdEventDto) {
+	for {
+		newThreshold := <-updateThresholdChan
+
+		sensorData := sensorMap[newThreshold.SensorID]
+		sensorData.Threshold = newThreshold.Temperature
+	}
 }
