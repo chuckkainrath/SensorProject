@@ -41,7 +41,7 @@ func StartServer() {
 	// Handlers - Threshold
 	getThresholdHandler := controllers.NewGetThresholdHandler(thresholdService)
 	// postThresholdHandler := controllers.NewPostThresholdHandler(thresholdService)
-	deleteThresholdHandler := controllers.NewDeleteThresholdHandler(thresholdService)
+	deleteThresholdHandler := controllers.NewDeleteThresholdHandler(thresholdService, thresholdUpdateChan)
 	postThresholdHandler := controllers.NewPostThresholdHandler(thresholdService, thresholdUpdateChan)
 
 	// Handlers - Temperature
