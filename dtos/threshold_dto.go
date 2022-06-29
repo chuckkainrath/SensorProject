@@ -1,8 +1,10 @@
 package dtos
 
+import "github.com/shopspring/decimal"
+
 type AddThresholdDto struct {
-	SensorID    uint    `json:"sensor_id"`
-	Temperature float64 `json:"temperature"`
+	SensorID    uint            `json:"sensor_id"`
+	Temperature decimal.Decimal `json:"temperature"`
 }
 
 type InputGetThresholdDto struct {
