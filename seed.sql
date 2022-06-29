@@ -27,11 +27,12 @@ CREATE TABLE temperatures (
   PRIMARY KEY (id)
 );
 
+CREATE INDEX sensor_time ON temperatures(sensor_id, created_at);
+
 CREATE TABLE thresholds (
-  id SERIAL NOT NULL,
   temperature NUMERIC(8, 4) NOT NULL,
   sensor_id INT UNIQUE references sensors(id),
-  PRIMARY KEY (id)
+  PRIMARY KEY (sensor_id)
 );
 
 CREATE TABLE threshold_alerts (

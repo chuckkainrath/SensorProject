@@ -9,8 +9,8 @@ import (
 )
 
 type ThresholdRepository interface {
-	GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError)
-	PostNewThresholdToDb(thresh *models.Threshold) *errors.AppError
+	GetSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
+	UpsertNewThresholdToDb(thresh *models.Threshold) *errors.AppError
 	GetThresholdTemperature(sensorId uint) (*decimal.Decimal, *errors.AppError)
 }
 
@@ -24,10 +24,10 @@ func NewThresholdRepositoryDB(db *gorm.DB) ThresholdRepository {
 	}
 }
 
-func (t thresholdRepository) GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError) {
-	thresholdSql := "SELECT id, temperature, sensor_id FROM thresholds WHERE id = ? AND sensor_id = ?"
+func (t thresholdRepository) GetSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
+	thresholdSql := "SELECT id, temperature, sensor_id FROM sensor_id = ?"
 	var thresholds models.Threshold
-	query := t.db.Raw(thresholdSql, thresholdId, sensorId)
+	query := t.db.Raw(thresholdSql, sensorId)
 	result := query.First(&thresholds)
 	if result.Error != nil {
 		return nil, errors.NewNotFoundError("Threshold Not Found")
@@ -43,9 +43,14 @@ func (t thresholdRepository) GetSensorThreshold(sensorId uint, thresholdId uint)
 // 	return nil
 // }
 
-func (t thresholdRepository) PostNewThresholdToDb(thresh *models.Threshold) *errors.AppError {
-	//do i insert id for this if GORM autofills? TODO:DUSTIN
-	result := DB().Create(&thresh)
+// func (t thresholdRepository) UpsertNewThresholdToDb(thresh *models.Threshold) *errors.AppError {
+// 	//do i insert id for this if GORM autofills? TODO:DUSTIN
+// 	result := DB().Create(&thresh)
+func (t thresholdRepository) UpsertNewThresholdToDb(thresh *models.Threshold) *errors.AppError {
+	thresholdSql := "UPSERT INTO thresholds (temperature, sensor_id) VALUES (?,?)"
+	var thresholds models.Threshold
+	query := t.db.Raw(thresholdSql, thresh.Temperature, thresh.SensorID)
+	result := query.Find(&thresholds)
 	if result.Error != nil {
 		return errors.NewUnexpectedError("Unexpected error while processing request")
 	}

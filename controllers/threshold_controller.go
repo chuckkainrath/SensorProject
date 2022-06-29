@@ -30,7 +30,7 @@ func NewPostThresholdHandler(thresholdService service.ThresholdService) http.Han
 //GET /sensors/:sensorId/thresholds/:thresholdId
 func (th *getThresholdHandler) getSensorThreshold(w http.ResponseWriter, r *http.Request) {
 	inputDto := **middleware.GetRequestParams(r).(**dtos.InputGetThresholdDto)
-	threshold, err := th.thresholdService.GetSensorThreshold(inputDto.SensorID, inputDto.ThresholdID)
+	threshold, err := th.thresholdService.GetSensorThreshold(inputDto.SensorID)
 
 	if err != nil {
 		middleware.AddResultToContext(r, err, middleware.ErrorKey)
@@ -43,7 +43,7 @@ func (th *getThresholdHandler) getSensorThreshold(w http.ResponseWriter, r *http
 func (th *postThresholdHandler) postSensorThreshold(w http.ResponseWriter, r *http.Request) {
 	inputDto := **middleware.GetRequestBody(r).(**dtos.AddThresholdDto)
 	//TODO: DUSTIN, why is this not working? Try removing newThreshold?
-	err := th.thresholdService.PostNewThreshold(inputDto.SensorID, inputDto.Temperature)
+	err := th.thresholdService.UpsertNewThreshold(inputDto.SensorID, inputDto.Temperature)
 	if err != nil {
 		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
