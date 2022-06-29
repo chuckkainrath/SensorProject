@@ -25,7 +25,7 @@ func NewThresholdRepositoryDB(db *gorm.DB) ThresholdRepository {
 }
 
 func (t thresholdRepository) GetSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
-	thresholdSql := "SELECT id, temperature, sensor_id FROM sensor_id = ?"
+	thresholdSql := "SELECT temperature, sensor_id FROM thresholds WHERE sensor_id = ?"
 	var thresholds models.Threshold
 	query := t.db.Raw(thresholdSql, sensorId)
 	result := query.First(&thresholds)

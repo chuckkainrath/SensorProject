@@ -63,7 +63,7 @@ func (g *getAllSensorsHandler) GetSensors(w http.ResponseWriter, r *http.Request
 }
 
 func (g *getSensorHandler) GetSensorById(w http.ResponseWriter, r *http.Request) {
-	getSensorDto := **middleware.GetRequestParams(r).(**dtos.SensorIdDto)
+	getSensorDto := *middleware.GetRequestParams(r).(*dtos.SensorIdDto)
 	// TODO: use tkn.UserName to get all sensors for the specified user
 	// tkn := *auth.GetTokenData(r).(*models.Token)
 	sensor, err := g.SensorsService.GetSensorById(getSensorDto.SensorID)
