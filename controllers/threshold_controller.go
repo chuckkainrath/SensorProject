@@ -43,12 +43,12 @@ func (th *getThresholdHandler) getSensorThreshold(w http.ResponseWriter, r *http
 func (th *postThresholdHandler) postSensorThreshold(w http.ResponseWriter, r *http.Request) {
 	inputDto := **middleware.GetRequestBody(r).(**dtos.AddThresholdDto)
 	//TODO: DUSTIN, why is this not working? Try removing newThreshold?
-	newThreshold, err := th.thresholdService.PostNewThreshold(inputDto.SensorID, inputDto.Temperature)
+	err := th.thresholdService.PostNewThreshold(inputDto.SensorID, inputDto.Temperature)
 	if err != nil {
 		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
 	}
-	middleware.AddResultToContext(r, newThreshold, middleware.InputBodyKey) // ??? InputBodyKey correct here TODO:DUSTIN
+	//middleware.AddResultToContext(r, newThreshold, middleware.InputBodyKey) // ??? InputBodyKey correct here TODO:DUSTIN
 	//addThresholdDto := *middleware.GetRequestBody(r).(*dtos.AddThresholdDto)
 
 	// customer, err := th.service.PostNewThreshold(id)

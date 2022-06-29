@@ -10,7 +10,7 @@ import (
 
 type ThresholdRepository interface {
 	GetSensorThreshold(sensorId uint, thresholdId uint) (*models.Threshold, *errors.AppError)
-	PostNewThresholdToDb(thresh models.Threshold) *errors.AppError
+	PostNewThresholdToDb(thresh *models.Threshold) *errors.AppError
 	GetThresholdTemperature(sensorId uint) (*decimal.Decimal, *errors.AppError)
 }
 
@@ -43,9 +43,9 @@ func (t thresholdRepository) GetSensorThreshold(sensorId uint, thresholdId uint)
 // 	return nil
 // }
 
-func (t thresholdRepository) PostNewThresholdToDb(thresh models.Threshold) *errors.AppError {
+func (t thresholdRepository) PostNewThresholdToDb(thresh *models.Threshold) *errors.AppError {
 	//do i insert id for this if GORM autofills? TODO:DUSTIN
-	result := DB().Create(thresh)
+	result := DB().Create(&thresh)
 	if result.Error != nil {
 		return errors.NewUnexpectedError("Unexpected error while processing request")
 	}

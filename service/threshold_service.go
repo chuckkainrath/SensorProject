@@ -50,7 +50,7 @@ func (t thresholdService) PostNewThreshold(sensorId uint, temperature decimal.De
 		SensorID:    sensorId,
 		Temperature: temperature,
 	}
-	return t.ThresholdRepo.PostNewThresholdToDb(thresh)
+	return t.ThresholdRepo.PostNewThresholdToDb(&thresh)
 	// c, err := t.ThresholdRepo.PostNewThreshold(sensorId)
 	// if err != nil {
 	// 	return nil, err
