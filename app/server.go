@@ -67,7 +67,7 @@ func StartServer() {
 	// Temperature
 	router.Handle("/sensors/temperatures", middleware.BindRequestBody(postTemperatureHandler, &dtos.AddTemperatureDto{})).Methods(http.MethodPost)
 
-	// Auth subrouter
+	// Auth subrouterå
 	s := router.PathPrefix("/").Subrouter()
 	s.Use(auth.JwtVerify)
 
