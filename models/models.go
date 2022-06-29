@@ -44,3 +44,8 @@ type Token struct {
 	Username string
 	jwt.StandardClaims
 }
+
+type SensorThreshold struct {
+	Threshold *decimal.Decimal
+	Temps     []decimal.Decimal
+}

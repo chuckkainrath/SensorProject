@@ -3,6 +3,7 @@ package app
 import (
 	"SensorProject/controllers"
 	"SensorProject/dtos"
+	event "SensorProject/events"
 	"SensorProject/middleware"
 	"SensorProject/middleware/auth"
 	"SensorProject/repository"
@@ -16,6 +17,10 @@ import (
 
 func StartServer() {
 	dbClient := repository.DB()
+
+	// Channels
+	tempAddChan := event.GetAddTemperatureChannel()
+	thresholdUpdateChan := event.GetUpdateThresholdChannel()
 
 	// Util
 	dateUtil := util.NewDateChecker()
@@ -35,11 +40,12 @@ func StartServer() {
 
 	// Handlers - Threshold
 	getThresholdHandler := controllers.NewGetThresholdHandler(thresholdService)
-	postThresholdHandler := controllers.NewPostThresholdHandler(thresholdService)
+	// postThresholdHandler := controllers.NewPostThresholdHandler(thresholdService)
 	deleteThresholdHandler := controllers.NewDeleteThresholdHandler(thresholdService)
+	postThresholdHandler := controllers.NewPostThresholdHandler(thresholdService, thresholdUpdateChan)
 
 	// Handlers - Temperature
-	postTemperatureHandler := controllers.NewPostTemperatureHandler(tempService)
+	postTemperatureHandler := controllers.NewPostTemperatureHandler(tempService, tempAddChan)
 
 	// Handlers - Stats
 	getReadingsHandler := controllers.NewGetReadingsHandler(tempService)
@@ -63,7 +69,7 @@ func StartServer() {
 	// Temperature
 	router.Handle("/sensors/temperatures", middleware.BindRequestBody(postTemperatureHandler, &dtos.AddTemperatureDto{})).Methods(http.MethodPost)
 
-	// Auth subrouter
+	// Auth subrouterå
 	s := router.PathPrefix("/").Subrouter()
 	s.Use(auth.JwtVerify)
 

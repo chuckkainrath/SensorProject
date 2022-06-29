@@ -12,7 +12,8 @@ type getThresholdHandler struct {
 }
 
 type postThresholdHandler struct {
-	thresholdService service.ThresholdService
+	thresholdService    service.ThresholdService
+	updateThresholdChan chan<- dtos.ThresholdEventDto
 }
 
 type deleteThresholdHandler struct {
@@ -25,9 +26,11 @@ func NewGetThresholdHandler(thresholdService service.ThresholdService) http.Hand
 	}
 }
 
-func NewPostThresholdHandler(thresholdService service.ThresholdService) http.Handler {
+func NewPostThresholdHandler(thresholdService service.ThresholdService,
+	updateThresholdChan chan<- dtos.ThresholdEventDto) http.Handler {
 	return &postThresholdHandler{
-		thresholdService: thresholdService,
+		thresholdService:    thresholdService,
+		updateThresholdChan: updateThresholdChan,
 	}
 }
 
@@ -55,16 +58,20 @@ func (th *getThresholdHandler) getSensorThreshold(w http.ResponseWriter, r *http
 	middleware.AddResultToContext(r, threshold, middleware.OutputDataKey)
 }
 
-//POST /sensors/:sensorId/thresholds   //Include to check to see if a threshold already exists, if it does POST request isn't allowed, and a PUT request should be recommended
+//POST /sensors/thresholds   //Include to check to see if a threshold already exists, if it does POST request isn't allowed, and a PUT request should be recommended
 func (th *postThresholdHandler) postSensorThreshold(w http.ResponseWriter, r *http.Request) {
-	//addThresholdDto := *middleware.GetRequestBody(r).(*dtos.AddThresholdDto)
+	inputDto := **middleware.GetRequestBody(r).(**dtos.AddThresholdDto)
 
-	// customer, err := th.service.PostNewThreshold(id)
-	// if err != nil {
-	// 	writeResponse(w, err.Code, err.AsMessage())
-	// } else {
-	// 	writeResponse(w, http.StatusOK, customer)
-	// }
+	err := th.thresholdService.UpsertNewThreshold(inputDto.SensorID, inputDto.Temperature)
+	if err != nil {
+		middleware.AddResultToContext(r, err, middleware.ErrorKey)
+		return
+	}
+
+	th.updateThresholdChan <- dtos.ThresholdEventDto{
+		SensorID:    inputDto.SensorID,
+		Temperature: &inputDto.Temperature,
+	}
 }
 
 func (th *deleteThresholdHandler) deleteSensorThreshold(w http.ResponseWriter, r *http.Request) {
