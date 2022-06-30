@@ -3,6 +3,7 @@ package app
 import (
 	"SensorProject/controllers"
 	"SensorProject/dtos"
+	event "SensorProject/events"
 	"SensorProject/middleware"
 	"SensorProject/middleware/auth"
 	"SensorProject/repository"
@@ -16,6 +17,10 @@ import (
 
 func StartServer() {
 	dbClient := repository.DB()
+
+	// Channels
+	tempAddChan := event.GetAddTemperatureChannel()
+	thresholdUpdateChan := event.GetUpdateThresholdChannel()
 
 	// Util
 	dateUtil := util.NewDateChecker()
@@ -35,10 +40,12 @@ func StartServer() {
 
 	// Handlers - Threshold
 	getThresholdHandler := controllers.NewGetThresholdHandler(thresholdService)
-	postThresholdHandler := controllers.NewPostThresholdHandler(thresholdService)
+	// postThresholdHandler := controllers.NewPostThresholdHandler(thresholdService)
+	deleteThresholdHandler := controllers.NewDeleteThresholdHandler(thresholdService, thresholdUpdateChan)
+	postThresholdHandler := controllers.NewPostThresholdHandler(thresholdService, thresholdUpdateChan)
 
 	// Handlers - Temperature
-	postTemperatureHandler := controllers.NewPostTemperatureHandler(tempService)
+	postTemperatureHandler := controllers.NewPostTemperatureHandler(tempService, tempAddChan)
 
 	// Handlers - Stats
 	getReadingsHandler := controllers.NewGetReadingsHandler(tempService)
@@ -62,16 +69,19 @@ func StartServer() {
 	// Temperature
 	router.Handle("/sensors/temperatures", middleware.BindRequestBody(postTemperatureHandler, &dtos.AddTemperatureDto{})).Methods(http.MethodPost)
 
-	// Auth subrouter
+	// Auth subrouterå
 	s := router.PathPrefix("/").Subrouter()
 	s.Use(auth.JwtVerify)
 
 	// Thresholds
-	s.Handle("/sensors/{sensor_id:[0-9]+}/thresholds/{threshold_id:[0-9]+}",
+	s.Handle("/sensors/{sensor_id:[0-9]+}/thresholds",
 		middleware.BindRequestParams(getThresholdHandler, &dtos.InputGetThresholdDto{})).Methods(http.MethodGet)
 
 	s.Handle("/sensors/thresholds",
-		middleware.BindRequestBody(postThresholdHandler, &dtos.AddThresholdDto{})).Methods(http.MethodPost)
+		middleware.BindRequestBody(postThresholdHandler, &dtos.AddThresholdDto{})).Methods(http.MethodPost, http.MethodPut)
+
+	s.Handle("/sensors/{sensor_id:[0-9]+}/thresholds",
+		middleware.BindRequestBody(deleteThresholdHandler, &dtos.InputGetThresholdDto{})).Methods(http.MethodDelete)
 
 	// Stats
 	s.Handle("/sensors/{sensor_id:[0-9]+}/stats/readings",

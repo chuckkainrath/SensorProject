@@ -27,7 +27,6 @@ type Sensor struct {
 }
 
 type Threshold struct {
-	ID          uint            `json:"id"`
 	SensorID    uint            `json:"sensor_id"`
 	Temperature decimal.Decimal `gorm:"type:numeric" json:"temperature"`
 }
@@ -44,4 +43,9 @@ type Token struct {
 	UserID   uint
 	Username string
 	jwt.StandardClaims
+}
+
+type SensorThreshold struct {
+	Threshold *decimal.Decimal
+	Temps     []decimal.Decimal
 }
