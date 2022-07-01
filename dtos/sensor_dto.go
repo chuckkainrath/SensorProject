@@ -15,4 +15,9 @@ type SensorIdDto struct {
 type UpdateSensorDto struct {
 	SensorID uint   `json:"sensor_id"`
 	Name     string `json:"name"`
+	UserID   uint   `json:"user_id"`
+}
+
+type PostSensorDto struct {
+	Name string `json:"name"`
 }

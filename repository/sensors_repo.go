@@ -11,6 +11,8 @@ import (
 type SensorRepository interface {
 	FetchSensors() (*[]dtos.SensorDto, *errors.AppError)
 	FetchSensorById(sensorId uint) (*dtos.SensorDto, *errors.AppError)
+	UpdateSensorByID(sens *models.Sensor) *errors.AppError
+	CreateSensor(name string, userId uint) *errors.AppError
 }
 
 type sensorRepository struct {
@@ -41,4 +43,34 @@ func (s sensorRepository) FetchSensorById(sensorId uint) (*dtos.SensorDto, *erro
 		return nil, errors.NewUnexpectedError("Unexpected error while processing request")
 	}
 	return &sensor, nil
+}
+
+func (s sensorRepository) UpdateSensorByID(sens *models.Sensor) *errors.AppError {
+
+	sensorSql := "UPDATE sensors SET sensor_name = ? WHERE id = ?"
+
+	var sensor models.Sensor
+
+	query := s.db.Raw(sensorSql, sens.Name, sens.ID)
+	result := query.Find(&sensor)
+
+	if result.Error != nil {
+		return errors.NewUnexpectedError("Unexpected error while processing request")
+	}
+	return nil
+}
+
+func (s sensorRepository) CreateSensor(name string, userId uint) *errors.AppError {
+
+	sensorSql := "INSERT INTO sensors (user_id, sensor_name) VALUES (?, ?)"
+
+	// var sensor models.Sensor
+
+	result := s.db.Exec(sensorSql, userId, name)
+
+	if result.Error != nil {
+		return errors.NewUnexpectedError("Unexpected error while processing request")
+	}
+	return nil
+
 }

@@ -55,6 +55,7 @@ func StartServer() {
 	getAllSensorsHandler := controllers.NewGetAllSensorsHandler(sensorService)
 	getSensorHandler := controllers.NewGetSensorHandler(sensorService)
 	updateSensorHandler := controllers.NewUpdateSensorHandler(sensorService)
+	postSensorHandler := controllers.NewPostSensorHandler((sensorService))
 
 	// Handlers - User
 	userLoginHandler := controllers.NewUserLoginHandler(userService)
@@ -98,7 +99,8 @@ func StartServer() {
 	// Sensors
 	s.Handle("/sensors", getAllSensorsHandler).Methods(http.MethodGet)
 	s.Handle("/sensors/{sensor_id:[0-9]+}", middleware.BindRequestParams(getSensorHandler, &dtos.SensorIdDto{})).Methods(http.MethodGet)
-	s.Handle("/sensors", middleware.BindRequestBody(updateSensorHandler, &dtos.UpdateSensorDto{})).Methods(http.MethodPut)
+	s.Handle("/sensors/{sensor_id:[0-9]+}", middleware.BindRequestBody(updateSensorHandler, &dtos.UpdateSensorDto{})).Methods(http.MethodPut)
+	s.Handle("/sensors", middleware.BindRequestBody(postSensorHandler, &dtos.PostSensorDto{})).Methods(http.MethodPost)
 
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
 }

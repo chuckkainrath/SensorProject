@@ -3,13 +3,15 @@ package service
 import (
 	"SensorProject/dtos"
 	"SensorProject/middleware/errors"
+	"SensorProject/models"
 	"SensorProject/repository"
 )
 
 type SensorService interface {
 	GetSensors() (*[]dtos.SensorDto, *errors.AppError)
 	GetSensorById(sensorId uint) (*dtos.SensorDto, *errors.AppError)
-	UpdateSensor()
+	UpdateSensor(sensorId uint, name string, userId uint) *errors.AppError
+	PostSensor(name string, userId uint) *errors.AppError
 }
 
 type sensorService struct {
@@ -33,6 +35,19 @@ func (s sensorService) GetSensorById(sensorId uint) (*dtos.SensorDto, *errors.Ap
 }
 
 // TODO: add USER ID to filter results
-func (s sensorService) UpdateSensor() {
+func (s sensorService) UpdateSensor(sensorId uint, name string, userId uint) *errors.AppError {
+
+	sens := models.Sensor{
+		ID:     sensorId,
+		Name:   name,
+		UserId: userId,
+	}
+
+	return s.SensorsRepository.UpdateSensorByID(&sens)
+}
+
+func (s sensorService) PostSensor(name string, userId uint) *errors.AppError {
+
+	return s.SensorsRepository.CreateSensor(name, userId)
 
 }
