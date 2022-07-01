@@ -49,3 +49,7 @@ type SensorThreshold struct {
 	Threshold *decimal.Decimal
 	Temps     []decimal.Decimal
 }
+
+func NewTemperatureModel() Temperature {
+	return Temperature{}
+}

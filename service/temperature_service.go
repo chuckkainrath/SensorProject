@@ -22,6 +22,8 @@ type temperatureService struct {
 	DateChecker     util.DateChecker
 }
 
+var NewTempModel = models.NewTemperatureModel
+
 func NewTemperatureService(temperatureRepo repository.TemperatureRepository, dateChecker util.DateChecker) TemperatureService {
 	return temperatureService{
 		TemperatureRepo: temperatureRepo,
@@ -53,9 +55,10 @@ func (t temperatureService) GetMinMaxAverageStats(sensorId uint, from, to time.T
 }
 
 func (t temperatureService) AddTemperature(sensorId uint, temperature decimal.Decimal) *errors.AppError {
-	temp := models.Temperature{
-		Temperature: temperature,
-		SensorID:    sensorId,
-	}
+
+	temp := NewTempModel()
+	temp.Temperature = temperature
+	temp.SensorID = sensorId
+
 	return t.TemperatureRepo.AddTemperatureToDb(&temp)
 }
