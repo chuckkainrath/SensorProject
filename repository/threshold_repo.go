@@ -30,7 +30,7 @@ func (t thresholdRepository) GetSensorThreshold(sensorId uint, userId uint) (*mo
 	query := t.db.Raw(thresholdSql, sensorId, userId)
 	result := query.First(&thresholds)
 	if result.Error == gorm.ErrRecordNotFound {
-		return nil, errors.NewBadRequestError("No data")
+		return nil, errors.NewBadRequestError("User not allowed")
 	} else if result.Error != nil {
 		return nil, errors.NewUnexpectedError("Unexpected error while processing request")
 	}
