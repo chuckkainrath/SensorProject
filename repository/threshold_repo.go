@@ -9,7 +9,7 @@ import (
 )
 
 type ThresholdRepository interface {
-	GetSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
+	GetSensorThreshold(sensorId uint, userId uint) (*models.Threshold, *errors.AppError)
 	UpsertNewThresholdToDb(thresh *models.Threshold) *errors.AppError
 	GetThresholdTemperature(sensorId uint) (*decimal.Decimal, *errors.AppError)
 }
@@ -24,28 +24,19 @@ func NewThresholdRepositoryDB(db *gorm.DB) ThresholdRepository {
 	}
 }
 
-func (t thresholdRepository) GetSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
-	thresholdSql := "SELECT id, temperature, sensor_id FROM sensor_id = ?"
+func (t thresholdRepository) GetSensorThreshold(sensorId uint, userId uint) (*models.Threshold, *errors.AppError) {
+	thresholdSql := "SELECT thresholds.id, temperature, sensor_id FROM thresholds LEFT JOIN sensors ON thresholds.sensor_id = sensors.id WHERE sensor_id = ? AND sensors.user_id = ?"
 	var thresholds models.Threshold
-	query := t.db.Raw(thresholdSql, sensorId)
+	query := t.db.Raw(thresholdSql, sensorId, userId)
 	result := query.First(&thresholds)
-	if result.Error != nil {
-		return nil, errors.NewNotFoundError("Threshold Not Found")
+	if result.Error == gorm.ErrRecordNotFound {
+		return nil, errors.NewBadRequestError("No data")
+	} else if result.Error != nil {
+		return nil, errors.NewUnexpectedError("Unexpected error while processing request")
 	}
 	return &thresholds, nil
 }
 
-// func (t temperatureRepository) AddTemperatureToDb(temp *models.Temperature) *errors.AppError {
-// 	result := DB().Create(temp)
-// 	if result.Error != nil {
-// 		return errors.NewUnexpectedError("Unexpected error while processing request")
-// 	}
-// 	return nil
-// }
-
-// func (t thresholdRepository) UpsertNewThresholdToDb(thresh *models.Threshold) *errors.AppError {
-// 	//do i insert id for this if GORM autofills? TODO:DUSTIN
-// 	result := DB().Create(&thresh)
 func (t thresholdRepository) UpsertNewThresholdToDb(thresh *models.Threshold) *errors.AppError {
 	thresholdSql := "INSERT INTO thresholds (sensor_id, temperature) VALUES (?,?) on conflict(sensor_id) do update set temperature=EXCLUDED.temperature"
 	var thresholds models.Threshold
@@ -55,14 +46,6 @@ func (t thresholdRepository) UpsertNewThresholdToDb(thresh *models.Threshold) *e
 		return errors.NewUnexpectedError("Unexpected error while processing request")
 	}
 	return nil
-	// thresholdSql := "INSERT INTO thresholds (id, temperature, sensor_id) VALUES (?,?,?)"
-	// var thresholds models.Threshold
-	// query := t.db.Raw(thresholdSql, sensorId)
-	// result := query.Find(&thresholds)
-	// if result.Error != nil {
-	// 	return nil, errors.NewNotFoundError("Threshold Not Found")
-	// }
-	// return &thresholds, nil
 }
 
 func (t thresholdRepository) GetThresholdTemperature(sensorId uint) (*decimal.Decimal, *errors.AppError) {

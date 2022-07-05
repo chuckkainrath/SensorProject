@@ -11,7 +11,7 @@ import (
 var tempCount = 5
 
 type ThresholdService interface {
-	GetSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError)
+	GetSensorThreshold(sensorId uint, userId uint) (*models.Threshold, *errors.AppError)
 	UpsertNewThreshold(sensorId uint, temperature decimal.Decimal) *errors.AppError
 
 	CheckForThresholdBreach(sensorId uint)
@@ -33,8 +33,8 @@ func NewThresholdService(thresholdRepo repository.ThresholdRepository,
 	}
 }
 
-func (t thresholdService) GetSensorThreshold(sensorId uint) (*models.Threshold, *errors.AppError) {
-	c, err := t.ThresholdRepo.GetSensorThreshold(sensorId)
+func (t thresholdService) GetSensorThreshold(sensorId uint, userId uint) (*models.Threshold, *errors.AppError) {
+	c, err := t.ThresholdRepo.GetSensorThreshold(sensorId, userId)
 	if err != nil {
 		return nil, err
 	}
