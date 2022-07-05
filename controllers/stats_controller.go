@@ -3,6 +3,8 @@ package controllers
 import (
 	"SensorProject/dtos"
 	"SensorProject/middleware"
+	"SensorProject/middleware/auth"
+	"SensorProject/models"
 	"SensorProject/service"
 	"net/http"
 )
@@ -37,8 +39,9 @@ func (g *getStats) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (g *getReadings) GetPerMinuteReadings(w http.ResponseWriter, r *http.Request) {
 	statsDto := **middleware.GetRequestParams(r).(**dtos.InputStatsDto)
+	userTkn := *auth.GetTokenData(r).(*models.Token)
 
-	res, err := g.TemperatureService.GetPerMinuteReading(statsDto.SensorID, statsDto.From, statsDto.To)
+	res, err := g.TemperatureService.GetPerMinuteReading(statsDto.SensorID, statsDto.From, statsDto.To, userTkn.UserID)
 	if err != nil {
 		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return
@@ -48,8 +51,9 @@ func (g *getReadings) GetPerMinuteReadings(w http.ResponseWriter, r *http.Reques
 
 func (g *getStats) GetMinMaxAverageStats(w http.ResponseWriter, r *http.Request) {
 	statsDto := **middleware.GetRequestParams(r).(**dtos.InputStatsDto)
+	userTkn := *auth.GetTokenData(r).(*models.Token)
 
-	res, err := g.TemperatureService.GetMinMaxAverageStats(statsDto.SensorID, statsDto.From, statsDto.To)
+	res, err := g.TemperatureService.GetMinMaxAverageStats(statsDto.SensorID, statsDto.From, statsDto.To, userTkn.UserID)
 	if err != nil {
 		middleware.AddResultToContext(r, err, middleware.ErrorKey)
 		return

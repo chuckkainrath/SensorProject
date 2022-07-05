@@ -12,8 +12,8 @@ import (
 )
 
 type TemperatureService interface {
-	GetPerMinuteReading(sensorId uint, from, to time.Time) (*[]dtos.GetTemperatureDto, *errors.AppError)
-	GetMinMaxAverageStats(sensorId uint, from, to time.Time) (*[]dtos.TemperatureStatsDto, *errors.AppError)
+	GetPerMinuteReading(sensorId uint, from, to time.Time, userId uint) (*[]dtos.GetTemperatureDto, *errors.AppError)
+	GetMinMaxAverageStats(sensorId uint, from, to time.Time, userId uint) (*[]dtos.TemperatureStatsDto, *errors.AppError)
 	AddTemperature(sensorId uint, temperature decimal.Decimal) *errors.AppError
 }
 
@@ -29,7 +29,7 @@ func NewTemperatureService(temperatureRepo repository.TemperatureRepository, dat
 	}
 }
 
-func (t temperatureService) GetPerMinuteReading(sensorId uint, from, to time.Time) (*[]dtos.GetTemperatureDto, *errors.AppError) {
+func (t temperatureService) GetPerMinuteReading(sensorId uint, from, to time.Time, userId uint) (*[]dtos.GetTemperatureDto, *errors.AppError) {
 	duration := 24 * time.Hour
 	lastDay := t.DateChecker.CheckDateBeforeThresold(from, duration)
 	if !lastDay {
@@ -40,16 +40,16 @@ func (t temperatureService) GetPerMinuteReading(sensorId uint, from, to time.Tim
 		return nil, errors.NewBadRequestError("`from` to `to` duration must be less than 24 hours")
 	}
 
-	return t.TemperatureRepo.GetPerMinuteReadingInTimeRange(sensorId, from, to)
+	return t.TemperatureRepo.GetPerMinuteReadingInTimeRange(sensorId, from, to, userId)
 }
 
-func (t temperatureService) GetMinMaxAverageStats(sensorId uint, from, to time.Time) (*[]dtos.TemperatureStatsDto, *errors.AppError) {
+func (t temperatureService) GetMinMaxAverageStats(sensorId uint, from, to time.Time, userId uint) (*[]dtos.TemperatureStatsDto, *errors.AppError) {
 	duration := 30 * 24 * time.Hour
 	if !t.DateChecker.CheckDateTimeDuration(from, to, duration) {
 		return nil, errors.NewBadRequestError("`from` to `to` duration must be less than 30 days")
 	}
 
-	return t.TemperatureRepo.GetMinMaxAverageInTimeRange(sensorId, to, from)
+	return t.TemperatureRepo.GetMinMaxAverageInTimeRange(sensorId, to, from, userId)
 }
 
 func (t temperatureService) AddTemperature(sensorId uint, temperature decimal.Decimal) *errors.AppError {
