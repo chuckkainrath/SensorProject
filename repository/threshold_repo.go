@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"SensorProject/middleware/errors"
-	"SensorProject/models"
-
+	"github.com/chuckkainrath/SensorProject/middleware/errors"
+	"github.com/chuckkainrath/SensorProject/models"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )

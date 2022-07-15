@@ -1,13 +1,13 @@
 package service
 
 import (
-	"SensorProject/dtos"
-	"SensorProject/middleware/errors"
-	"SensorProject/models"
-	"SensorProject/repository"
-	util "SensorProject/util"
 	"time"
 
+	"github.com/chuckkainrath/SensorProject/dtos"
+	"github.com/chuckkainrath/SensorProject/middleware/errors"
+	"github.com/chuckkainrath/SensorProject/models"
+	"github.com/chuckkainrath/SensorProject/repository"
+	"github.com/chuckkainrath/SensorProject/util"
 	"github.com/shopspring/decimal"
 )
 

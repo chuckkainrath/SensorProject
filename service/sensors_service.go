@@ -1,10 +1,10 @@
 package service
 
 import (
-	"SensorProject/dtos"
-	"SensorProject/middleware/errors"
-	"SensorProject/models"
-	"SensorProject/repository"
+	"github.com/chuckkainrath/SensorProject/dtos"
+	"github.com/chuckkainrath/SensorProject/middleware/errors"
+	"github.com/chuckkainrath/SensorProject/models"
+	"github.com/chuckkainrath/SensorProject/repository"
 )
 
 type SensorService interface {

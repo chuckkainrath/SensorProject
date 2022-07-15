@@ -1,13 +1,13 @@
 package auth
 
 import (
-	"SensorProject/middleware"
-	"SensorProject/middleware/errors"
-	"SensorProject/models"
 	"context"
 	"net/http"
 	"strings"
 
+	"github.com/chuckkainrath/SensorProject/middleware"
+	"github.com/chuckkainrath/SensorProject/middleware/errors"
+	"github.com/chuckkainrath/SensorProject/models"
 	"github.com/dgrijalva/jwt-go"
 )
 

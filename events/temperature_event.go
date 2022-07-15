@@ -1,13 +1,13 @@
 package event
 
 import (
-	"SensorProject/dtos"
-	"SensorProject/models"
-	"SensorProject/repository"
-	"SensorProject/service"
 	"fmt"
 	"sync"
 
+	"github.com/chuckkainrath/SensorProject/dtos"
+	"github.com/chuckkainrath/SensorProject/models"
+	"github.com/chuckkainrath/SensorProject/repository"
+	"github.com/chuckkainrath/SensorProject/service"
 	"github.com/shopspring/decimal"
 )
 

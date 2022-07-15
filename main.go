@@ -1,9 +1,9 @@
 package main
 
 import (
-	"SensorProject/app"
-	event "SensorProject/events"
-	"SensorProject/repository"
+	"github.com/chuckkainrath/SensorProject/app"
+	event "github.com/chuckkainrath/SensorProject/events"
+	"github.com/chuckkainrath/SensorProject/repository"
 )
 
 func main() {
