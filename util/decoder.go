@@ -1,12 +1,12 @@
 package util
 
 import (
-	"SensorProject/middleware/errors"
 	"fmt"
 	"reflect"
 	"strconv"
 	"time"
 
+	"github.com/chuckkainrath/SensorProject/middleware/errors"
 	"github.com/mitchellh/mapstructure"
 )
 

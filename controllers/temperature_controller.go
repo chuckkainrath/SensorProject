@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"SensorProject/dtos"
-	"SensorProject/middleware"
-	"SensorProject/service"
 	"net/http"
+
+	"github.com/chuckkainrath/SensorProject/dtos"
+	"github.com/chuckkainrath/SensorProject/middleware"
+	"github.com/chuckkainrath/SensorProject/service"
 )
 
 type postTemperatureHandler struct {

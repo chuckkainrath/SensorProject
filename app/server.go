@@ -1,17 +1,17 @@
 package app
 
 import (
-	"SensorProject/controllers"
-	"SensorProject/dtos"
-	event "SensorProject/events"
-	"SensorProject/middleware"
-	"SensorProject/middleware/auth"
-	"SensorProject/repository"
-	"SensorProject/service"
-	"SensorProject/util"
 	"log"
 	"net/http"
 
+	"github.com/chuckkainrath/SensorProject/controllers"
+	"github.com/chuckkainrath/SensorProject/dtos"
+	event "github.com/chuckkainrath/SensorProject/events"
+	"github.com/chuckkainrath/SensorProject/middleware"
+	"github.com/chuckkainrath/SensorProject/middleware/auth"
+	"github.com/chuckkainrath/SensorProject/repository"
+	"github.com/chuckkainrath/SensorProject/service"
+	"github.com/chuckkainrath/SensorProject/util"
 	"github.com/gorilla/mux"
 )
 

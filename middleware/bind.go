@@ -1,13 +1,13 @@
 package middleware
 
 import (
-	"SensorProject/middleware/errors"
-	"SensorProject/util"
 	"context"
 	"encoding/json"
 	"net/http"
 	"reflect"
 
+	"github.com/chuckkainrath/SensorProject/middleware/errors"
+	"github.com/chuckkainrath/SensorProject/util"
 	"github.com/gorilla/mux"
 )
 

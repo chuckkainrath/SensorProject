@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"SensorProject/middleware/errors"
 	"context"
 	"encoding/json"
 	"net/http"
+
+	"github.com/chuckkainrath/SensorProject/middleware/errors"
 )
 
 type response struct {

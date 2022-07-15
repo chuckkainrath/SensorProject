@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"SensorProject/dtos"
-	"SensorProject/middleware/errors"
-	"SensorProject/models"
 	"time"
 
+	"github.com/chuckkainrath/SensorProject/dtos"
+	"github.com/chuckkainrath/SensorProject/middleware/errors"
+	"github.com/chuckkainrath/SensorProject/models"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )

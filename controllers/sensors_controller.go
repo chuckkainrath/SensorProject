@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"SensorProject/dtos"
-	"SensorProject/middleware"
-	"SensorProject/middleware/auth"
-	"SensorProject/models"
-	"SensorProject/service"
 	"net/http"
+
+	"github.com/chuckkainrath/SensorProject/dtos"
+	"github.com/chuckkainrath/SensorProject/middleware"
+	"github.com/chuckkainrath/SensorProject/middleware/auth"
+	"github.com/chuckkainrath/SensorProject/models"
+	"github.com/chuckkainrath/SensorProject/service"
 )
 
 type getAllSensorsHandler struct {

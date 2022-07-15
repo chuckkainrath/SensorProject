@@ -1,11 +1,11 @@
 package service
 
 import (
-	"SensorProject/middleware/errors"
-	"SensorProject/models"
-	"SensorProject/repository"
 	"time"
 
+	"github.com/chuckkainrath/SensorProject/middleware/errors"
+	"github.com/chuckkainrath/SensorProject/models"
+	"github.com/chuckkainrath/SensorProject/repository"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
